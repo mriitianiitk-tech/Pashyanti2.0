@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantra & Stotra Japa Sanctuary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Meditative Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Mukta:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Smooth state transitions */
+        .transition-all-custom {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Floating animations for completed sparks */
+        @keyframes riseUp {
+            0% {
+                transform: translateY(100%) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-200px) scale(1.2);
+                opacity: 0;
+            }
+        }
+        .spark {
+            position: absolute;
+            animation: riseUp 1.5s ease-out forwards;
+        }
+
+        /* Customize scrollbars subtly */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 153, 51, 0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 153, 51, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#0c0f1d] text-gray-200 min-h-screen flex flex-col transition-all-custom select-none">
+
+    <!-- Active Custom Styling Injector -->
+    <style id="custom-theme-variables">
+        :root {
+            --japa-bg: #0c0f1d;
+            --japa-dim: #374151;
+            --japa-active: #60a5fa;
+            --japa-font: 'Cinzel', serif;
+        }
+    </style>
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-gray-800/60 bg-gray-950/40 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl text-amber-500 animate-pulse">ॐ</span>
+                <div>
+                    <h1 class="text-lg font-bold font-serif tracking-wider text-amber-500">Mantra & Stotra Sanctuary</h1>
+                    <p class="text-xs text-gray-400">Sacred Space for Mindful Chanting & Recitation</p>
+                </div>
+            </div>
+            
+            <nav class="flex items-center bg-gray-900/80 p-1 rounded-lg border border-gray-800/80">
+                <button id="tab-japa" onclick="switchTab('japa')" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 bg-amber-600 text-white shadow-lg">
+                    Sadhana
+                </button>
+                <button id="tab-library" onclick="switchTab('library')" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white">
+                    Treasury
+                </button>
+                <button id="tab-data" onclick="switchTab('data')" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white">
+                    Backup & Info
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Workspace -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 flex flex-col justify-center">
+
+        <!-- TAB 1: JAPA SADHANA (MEDITATION INTERFACE) -->
+        <section id="section-japa" class="space-y-6">
+            
+            <!-- Active Selector / Stats Panel -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-gray-950/30 p-4 rounded-xl border border-gray-800/40 backdrop-blur-sm">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-amber-500/70 font-semibold mb-1">Active Deity & Text</label>
+                    <select id="mantra-selector" onchange="selectMantra(this.value)" class="w-full bg-gray-900 border border-gray-700/80 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="flex justify-center items-center gap-6 py-2 border-y md:border-y-0 md:border-x border-gray-800/80">
+                    <div class="text-center">
+                        <div class="text-3xl font-extrabold text-amber-500 font-mono" id="japa-counter">0</div>
+                        <div class="text-[10px] uppercase tracking-wider text-gray-400" id="japa-counter-label">Chants Logged</div>
+                    </div>
+                    <div class="text-center" id="mala-stats-block">
+                        <div class="text-3xl font-extrabold text-gray-300 font-mono" id="malas-counter">0</div>
+                        <div class="text-[10px] uppercase tracking-wider text-gray-400">Malas Complete</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button onclick="resetCurrentMantraStats()" class="flex-1 md:flex-initial text-xs px-3 py-2 border border-rose-950/40 text-rose-400 bg-rose-950/10 hover:bg-rose-950/30 rounded-lg transition-all">
+                        Reset Counts
+                    </button>
+                    <button onclick="toggleFullscreenMode(true)" class="flex-1 md:flex-initial text-xs px-3 py-2 border border-amber-500/40 text-amber-500 hover:bg-amber-950/20 rounded-lg transition-all flex justify-center items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"></path></svg>
+                        Focus Focus
+                    </button>
+                    <button onclick="toggleSettingsModal(true)" class="flex-1 md:flex-initial text-xs px-3 py-2 border border-gray-700 text-gray-300 hover:bg-gray-800 rounded-lg transition-all flex justify-center items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Aesthetics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Direct Focus & Navigation Selector Control Strip -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40">
+                
+                <!-- Toggle Mode Selector: Option to hide completed/upcoming lines -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-gray-400 font-mono">Focus Mode:</span>
+                    <div class="inline-flex bg-gray-900 p-1 rounded-lg border border-gray-800">
+                        <button onclick="setFocusView('all')" id="focus-btn-all" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
+                            Show All
+                        </button>
+                        <button onclick="setFocusView('hide-completed')" id="focus-btn-hide-completed" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
+                            Hide Completed
+                        </button>
+                        <button onclick="setFocusView('active-only')" id="focus-btn-active-only" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
+                            Active Only
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stotra Navigation Jump Selector (Highly needed for long recitations) -->
+                <div id="stotra-navigation-block" class="hidden items-center gap-2">
+                    <span class="text-xs text-gray-400 font-mono">Jump to Stanza:</span>
+                    <select id="stotra-stanza-jumper" onchange="jumpToStanza(this.value)" class="bg-gray-900 border border-gray-800 text-gray-200 text-xs rounded px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                        <!-- Populated programmatically -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main Meditative Chanting Space -->
+            <div id="japa-display-container" class="relative rounded-2xl p-6 md:p-14 flex flex-col justify-center items-center shadow-2xl transition-all-custom border border-gray-800/40 overflow-hidden min-h-[380px] text-center" style="background-color: var(--japa-bg);">
+                
+                <!-- Floating sparks system container -->
+                <div id="sparkles-container" class="absolute inset-0 pointer-events-none"></div>
+
+                <!-- Current Line Indicator -->
+                <div class="absolute top-4 left-4 right-4 flex justify-between items-center opacity-60 text-xs tracking-widest uppercase font-mono">
+                    <span id="highlight-mode-badge" class="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px]">Phrase Mode</span>
+                    <span id="active-line-indicator">Line 1 of 1</span>
+                </div>
+
+                <!-- Central Sacred Mantra Box -->
+                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[50vh] overflow-y-auto" style="font-family: var(--japa-font); font-size: 32px;">
+                    <!-- Mantra/Stotra tokens loaded dynamically -->
+                </div>
+
+                <!-- Touch Action Area overlay (makes mobile chanting effortless) -->
+                <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant forward"></div>
+
+                <!-- Progress Bar inside screen -->
+                <div class="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-center gap-1.5 pointer-events-none">
+                    <div id="stotra-progress-wrapper" class="w-1/2 bg-gray-800/80 h-1.5 rounded-full overflow-hidden hidden border border-white/5">
+                        <div id="stotra-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <span id="stotra-progress-label" class="text-[10px] uppercase font-mono tracking-wider opacity-60 hidden">Paragraph 1 of 1 (0%)</span>
+                    <!-- Keyboard Shortcut / Help Tip -->
+                    <div class="opacity-40 text-[11px] tracking-wide font-mono hidden md:block">
+                        Tip: <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Right Arrow</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Space</kbd> steps forward. <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Left Arrow</kbd> steps backward.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile-Friendly Touch Interface Controls -->
+            <div class="grid grid-cols-3 gap-3 z-20 relative">
+                <button onclick="handleStepBackward()" class="py-4 bg-gray-900 hover:bg-gray-800/80 text-gray-300 border border-gray-800/80 rounded-xl transition duration-150 flex flex-col items-center justify-center gap-1 active:scale-95 shadow-md">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                    <span class="text-[10px] tracking-wider uppercase opacity-80">Previous</span>
+                </button>
+                <button onclick="resetHighlightState()" class="py-4 bg-gray-900/60 hover:bg-gray-850 text-amber-600/80 border border-amber-950/20 rounded-xl transition duration-150 flex flex-col items-center justify-center gap-1 active:scale-95 shadow-md">
+                    <svg class="w-6 h-6 text-amber-500/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18V4"></path></svg>
+                    <span class="text-[10px] tracking-wider uppercase opacity-80">Reset Round</span>
+                </button>
+                <button onclick="handleStepForward()" class="py-4 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition duration-150 flex flex-col items-center justify-center gap-1 active:scale-95 shadow-lg shadow-amber-900/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                    <span class="text-[10px] tracking-widest uppercase">Tap Chant</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 2: TREASURY (MANAGE MANTRAS, STOTRAS & DEITIES) -->
+        <section id="section-library" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Add/Edit Mantra/Stotra Form (LHS) -->
+                <div class="lg:col-span-5 bg-gray-900/50 p-6 rounded-xl border border-gray-800/80 backdrop-blur-sm space-y-4">
+                    <h3 class="text-md font-bold text-amber-500 tracking-wider flex items-center gap-2">
+                        <span>✦</span> Save New Composition
+                    </h3>
+                    
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1 font-medium">Sacred Entity / Deity Name</label>
+                        <input id="input-deity" type="text" placeholder="e.g. Maa Lakshmi, Lord Shiva" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1 font-medium">Composition Title</label>
+                        <input id="input-title" type="text" placeholder="e.g. Shri Suktam, Shiva Panchakshara" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1.5 font-medium">Text Classification</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="form-type-mantra" onclick="setFormType('mantra')" class="py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
+                                Mantra (Japa Looping)
+                            </button>
+                            <button type="button" id="form-type-stotra" onclick="setFormType('stotra')" class="py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                                Stotra (Multi-Paragraphs)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs uppercase tracking-wider text-gray-400 font-medium">Sacred Text Lines</label>
+                            <span id="form-text-hint" class="text-[10px] text-gray-500 italic">Separate stanzas with double Enter spacing</span>
+                        </div>
+                        <textarea id="input-text" rows="7" placeholder="Paste lines of text here. If stotra, hit Enter twice to build paragraphs." class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none font-mono"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="saveMantra()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md active:scale-95">
+                            Commit to Treasury
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saved Mantras Grouped by Deity (RHS) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-md font-bold text-amber-500 tracking-wider">Treasury Vault</h3>
+                        <span id="total-library-count" class="text-xs bg-gray-900 border border-gray-800 px-2.5 py-1 rounded-full text-gray-400">0 Items</span>
+                    </div>
+
+                    <!-- Mantras Dynamic List Container -->
+                    <div id="mantras-vault-container" class="space-y-4 overflow-y-auto max-h-[500px] pr-1">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 3: BACKUP, RESTORE & DATA TRANSFER -->
+        <section id="section-data" class="hidden space-y-6">
+            <div class="max-w-2xl mx-auto bg-gray-900/40 p-6 rounded-xl border border-gray-800/80 backdrop-blur-sm space-y-6">
+                <div>
+                    <h3 class="text-md font-bold text-amber-500 tracking-wider mb-2">Secure Standalone Portability</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        To preserve ultimate standalone flexibility, all mantra structures, counts, and settings are stored locally in active browser memory. Export data to a backup file below to prevent any potential data loss or transfers between devices.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-amber-500 font-semibold mb-1">Export Backup File</h4>
+                            <p class="text-xs text-gray-500 mb-4">Download a full JSON record of your current treasury data and chant statistics.</p>
+                        </div>
+                        <button onclick="exportData()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs py-2 rounded-lg font-medium transition active:scale-95 border border-gray-700">
+                            Download Backup
+                        </button>
+                    </div>
+
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs uppercase tracking-wider text-amber-500 font-semibold mb-1">Restore Backup File</h4>
+                            <p class="text-xs text-gray-500 mb-4 font-mono">Upload a previously exported JSON backup file to overwrite current settings.</p>
+                        </div>
+                        <label class="w-full bg-amber-900/20 hover:bg-amber-900/30 text-amber-400 border border-amber-950/40 text-xs py-2 rounded-lg font-medium transition active:scale-95 cursor-pointer block text-center">
+                            Upload File
+                            <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-850 pt-4">
+                    <h4 class="text-xs uppercase tracking-wider text-rose-500 font-bold mb-2">Danger Area</h4>
+                    <button onclick="confirmResetAll()" class="text-xs px-3 py-1.5 border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-950/30 rounded-lg transition-all">
+                        Reset All Database to Default
+                    </button>
+                </div>
+
+                <!-- Spiritual Philosophy Note -->
+                <div class="bg-amber-950/10 border border-amber-900/20 p-4 rounded-lg">
+                    <div class="text-amber-500 text-xs font-semibold uppercase tracking-widest mb-1 font-serif">Sadhana Guidance</div>
+                    <p class="text-xs italic text-gray-400 leading-relaxed">
+                        "Real Sadhana is that which destroys cycle of births and deaths and leads us to state of eternal bliss." Chanting mantras is configured here to assist spiritual development towards obtaining moksha. Focus, clarity, and precision in sound resonance are key metrics of progress.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Aesthetic Config Modal (Slide out drawer / overlay) -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="toggleSettingsModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">✕</button>
+            
+            <h3 class="text-md font-bold text-amber-500 tracking-wider">Aesthetic Adjustments</h3>
+
+            <!-- Color Palette Presets -->
+            <div class="space-y-2">
+                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Theme Presets</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="applyPreset('somnath')" class="text-left p-2 rounded bg-slate-950 text-xs border border-gray-850 hover:bg-slate-900">
+                        <div class="font-semibold text-gray-200">Somnath Night</div>
+                        <div class="flex gap-1 mt-1"><span class="w-3 h-3 rounded-full bg-[#0c0f1d]"></span><span class="w-3 h-3 rounded-full bg-[#374151]"></span><span class="w-3 h-3 rounded-full bg-[#60a5fa]"></span></div>
+                    </button>
+                    <button onclick="applyPreset('saffron')" class="text-left p-2 rounded bg-[#1a0f00] text-xs border border-[#3d1f00] hover:bg-[#261500]">
+                        <div class="font-semibold text-[#ffaa44]">Saffron Solitude</div>
+                        <div class="flex gap-1 mt-1"><span class="w-3 h-3 rounded-full bg-[#1a0f00]"></span><span class="w-3 h-3 rounded-full bg-[#593c1a]"></span><span class="w-3 h-3 rounded-full bg-[#ff9933]"></span></div>
+                    </button>
+                    <button onclick="applyPreset('meadow')" class="text-left p-2 rounded bg-[#03140e] text-xs border border-[#1b3026] hover:bg-[#071c14]">
+                        <div class="font-semibold text-[#66bb6a]">Tulsi Meadow</div>
+                        <div class="flex gap-1 mt-1"><span class="w-3 h-3 rounded-full bg-[#03140e]"></span><span class="w-3 h-3 rounded-full bg-[#1b4332]"></span><span class="w-3 h-3 rounded-full bg-[#4ade80]"></span></div>
+                    </button>
+                    <button onclick="applyPreset('sarawati')" class="text-left p-2 rounded bg-[#fafaf9] text-xs border border-stone-200 hover:bg-stone-50">
+                        <div class="font-semibold text-[#1c1917]">Saraswati Altar</div>
+                        <div class="flex gap-1 mt-1"><span class="w-3 h-3 rounded-full bg-[#fafaf9]"></span><span class="w-3 h-3 rounded-full bg-[#a8a29e]"></span><span class="w-3 h-3 rounded-full bg-[#d97706]"></span></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Color Pickers -->
+            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-400 font-semibold">Custom Background</span>
+                    <input type="color" id="picker-bg" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-400 font-semibold">Custom Non-Highlighted Text</span>
+                    <input type="color" id="picker-dim" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-400 font-semibold">Custom Highlighted Text</span>
+                    <input type="color" id="picker-active" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Interactive Highlight Modes -->
+            <div class="space-y-2 border-t border-gray-800/80 pt-4">
+                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Highlight Interval</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="btn-mode-phrase" onclick="setHighlightMode('phrase')" class="py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold">
+                        Phrase-by-Phrase
+                    </button>
+                    <button id="btn-mode-line" onclick="setHighlightMode('line')" class="py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal">
+                        Line-by-Line
+                    </button>
+                </div>
+            </div>
+
+            <!-- Font Adjustments -->
+            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1.5">Font Typeface</label>
+                    <select id="font-family-selector" onchange="setFontFamily(this.value)" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                        <option value="Cinzel">Cinzel (Roman / Classical)</option>
+                        <option value="Playfair Display">Playfair Display (Serif)</option>
+                        <option value="Mukta">Mukta (Perfect Transliteration)</option>
+                        <option value="Caveat">Caveat (Intimate / Freehand)</option>
+                        <option value="Montserrat">Montserrat (Minimalist Sans)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Font Scale</label>
+                        <span id="font-scale-label" class="text-xs font-mono">32px</span>
+                    </div>
+                    <input type="range" id="input-font-size" min="18" max="72" value="32" oninput="setFontSize(this.value)" class="w-full h-1.5 bg-gray-950 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                </div>
+            </div>
+
+            <!-- Feedback Adjustments -->
+            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Tibetan Singing Bowl Sound</span>
+                        <span class="text-[10px] text-gray-500">Triggers on completing each full mantra/stotra cycle.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="sound-toggle" onchange="toggleSound(this.checked)" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Vibration Feedback</span>
+                        <span class="text-[10px] text-gray-500">Mobile haptics upon transitions.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="vibrate-toggle" onchange="toggleVibrate(this.checked)" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert and Notification Toasts -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[200] max-w-sm w-full bg-gray-900 border border-gray-800 text-gray-200 px-4 py-3 rounded-lg shadow-xl translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2">
+        <span id="toast-icon" class="text-amber-500">✦</span>
+        <span id="toast-message" class="text-xs"></span>
+    </div>
+
+    <!-- Distraction-Free Fullscreen Overlay -->
+    <div id="fullscreen-overlay" class="fixed inset-0 z-[150] hidden flex flex-col justify-between p-6 transition-all-custom" style="background-color: var(--japa-bg);">
+        <!-- Top Subtle Bar -->
+        <div class="flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity duration-300">
+            <div class="text-left font-serif">
+                <h4 id="fs-mantra-title" class="text-sm font-semibold tracking-wider text-amber-500">Panchadashi Mantra</h4>
+                <p id="fs-deity" class="text-[10px] text-gray-400">Maa Tripurasundari</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-center bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
+                    <span id="fs-counter" class="text-xl font-bold font-mono text-amber-500">0</span>
+                    <span id="fs-counter-label" class="text-[10px] uppercase tracking-widest text-gray-400 font-mono ml-1">Chants</span>
+                </div>
+                <button onclick="toggleFullscreenMode(false)" class="text-gray-400 hover:text-white px-3 py-1.5 rounded-lg border border-gray-800 bg-gray-950/60 text-xs flex items-center gap-1.5 transition active:scale-95">
+                    ✕ Exit Focus
+                </button>
+            </div>
+        </div>
+
+        <!-- Huge Central Chanting Area -->
+        <div class="flex-1 flex flex-col justify-center items-center relative overflow-hidden my-6">
+            <div id="fs-sparkles-container" class="absolute inset-0 pointer-events-none"></div>
+            <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant"></div>
+            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto" style="font-family: var(--japa-font); font-size: 42px;">
+                <!-- Highlight synced content -->
+            </div>
+        </div>
+
+        <!-- Bottom progress area inside Fullscreen focus mode -->
+        <div class="flex flex-col items-center gap-3">
+            <div id="fs-stotra-progress-wrapper" class="w-1/3 bg-white/10 h-1.5 rounded-full overflow-hidden hidden border border-white/5">
+                <div id="fs-stotra-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <span id="fs-stotra-progress-label" class="text-[10px] uppercase font-mono tracking-wider opacity-60 hidden">Stanza 1 of 1 (0%)</span>
+            <div class="text-center opacity-30 hover:opacity-100 transition-opacity duration-300 text-[11px] font-mono pointer-events-none flex flex-col md:flex-row justify-center gap-2 md:gap-4">
+                <span>Tap anywhere or press <kbd class="px-1 py-0.5 rounded bg-black/50 border border-white/10 font-bold">Right Arrow</kbd> / <kbd class="px-1 py-0.5 rounded bg-black/50 border border-white/10 font-bold">Space</kbd> to step forward</span>
+                <span class="hidden md:inline">|</span>
+                <span>Press <kbd class="px-1 py-0.5 rounded bg-black/50 border border-white/10 font-bold">Left Arrow</kbd> to step backward</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vanilla Javascript Logic Core -->
+    <script>
+        // Default seed data with both Mantras and Stotras
+        const initialMantras = [
+            {
+                id: "stotra-shrisuktam",
+                deity: "Maa Lakshmi",
+                title: "Shri Suktam",
+                text: "Om Hiranyavarnam Harinim Suvarnarajatasrajam\nChandraam Hiranmayim Lakshmim Jatavedo Maavaha\n\nTaam Maavaha Jaatavedo Lakshmim-Anapagaaminim\nYasyaam Hiranyam Vindeyam Gaamashvam Purushanaham\n\nAshvapurvaam Rathamadhyaam Hastinaada Pramodhini\nShriyam Devimupahvaye Shrirmaa Devi Jushataam\n\nKaamsosmitam Hiranyapraakaaram-Aardraam Jvalantim Triptam Tarpayantim\nPadme Sthitaam Padmavarnaam Taamihopahvaye Shriyam",
+                type: "stotra",
+                chants: 0
+            },
+            {
+                id: "stotra-shivapanchakshara",
+                deity: "Lord Shiva",
+                title: "Shiva Panchakshara Stotram",
+                text: "Nagendraharaya Trilocanaya Bhasmangaragaya Mahesvaraya\nNityaya Suddhaya Digambaraya Tasmai Nakaraya Namah Shivaya\n\nMandakini Salila Candana Carcitaya Nandisvara Pramatha Natha Mahesvaraya\nMandara Puspa Multa Puspa Supujitaya Tasmai Makaraya Namah Shivaya\n\nShivaya Gauri Vadanabja Vrnda Suryaya Daksadhvara Nasakaya\nSri Nilakanthaya Vrsadhvajaya Tasmai Sikaraya Namah Shivaya\n\nVasistha Ghotrabhava Pujitaya Suraasura Pujita Mastakaya\nCandraarka Vaishvaanara Locanaya Tasmai Vakaraya Namah Shivaya\n\nYajna Svarupaya Jata Dharaya Pinaka Hastaya Sanatanaya\nDivyaya Devaya Digambaraya Tasmai Yakaraya Namah Shivaya",
+                type: "stotra",
+                chants: 0
+            },
+            {
+                id: "mantra-tripurasundari",
+                deity: "Maa Tripurasundari",
+                title: "Panchadashi Mantra",
+                text: "Ka E I La Hreem\nHa Sa Ka Ha La Hreem\nSa Ka La Hreem",
+                type: "mantra",
+                chants: 0
+            },
+            {
+                id: "mantra-shiva",
+                deity: "Lord Shiva",
+                title: "Mahamrityunjaya Mantra",
+                text: "Om Tryambakam Yajamahe\nSugandhim Pushti-Vardhanam\nUrvarukamiva Bandhanan\nMrityor Mukshiya Mamritat",
+                type: "mantra",
+                chants: 0
+            },
+            {
+                id: "mantra-gayatri",
+                deity: "Maa Gayatri",
+                title: "Gayatri Mantra",
+                text: "Om Bhur Bhuvah Svah\nTat Savitur Varenyam\nBhargo Devasya Dheemahi\nDhiyo Yo Nah Prachodayat",
+                type: "mantra",
+                chants: 0
+            }
+        ];
+
+        // Central State Manager
+        let state = {
+            mantras: [...initialMantras],
+            selectedMantraId: "stotra-shrisuktam",
+            activeParagraphIndex: 0,
+            activeLineIndex: 0,
+            activeWordIndex: -1, // -1 means nothing in active line is highlighted yet
+            highlightMode: "phrase", // "phrase" or "line"
+            focusView: "all", // "all", "hide-completed", "active-only"
+            hidePreviousLines: false,
+            hideUpcomingLines: false,
+            fontFamily: "Cinzel",
+            fontSize: 32,
+            soundEnabled: true,
+            vibrateEnabled: true,
+            currentTab: "japa",
+            isFullscreen: false,
+            formType: "mantra", // "mantra" or "stotra"
+            customColors: {
+                bg: "#0c0f1d",
+                dim: "#374151",
+                active: "#60a5fa"
+            }
+        };
+
+        // Initialize state on start
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedDatabase();
+            applyThemeConfigStyles();
+            populateMantraSelector();
+            setFocusView(state.focusView || "all");
+            renderAll();
+            
+            // Register Keyboard Listeners
+            document.addEventListener('keydown', handleKeyPress);
+
+            // Back support for fullscreen exits
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    state.isFullscreen = false;
+                    const overlay = document.getElementById('fullscreen-overlay');
+                    if (overlay) overlay.classList.add('hidden');
+                }
+            });
+        });
+
+        // ---------------------------------------------------------------------
+        // Storage & Backup Mechanics
+        // ---------------------------------------------------------------------
+        function loadSavedDatabase() {
+            const localData = localStorage.getItem('__japa_sanctuary_db_backup');
+            if (localData) {
+                try {
+                    const parsed = JSON.parse(localData);
+                    if (parsed && Array.isArray(parsed.mantras)) {
+                        state.mantras = parsed.mantras;
+                        state.highlightMode = parsed.highlightMode || "phrase";
+                        state.focusView = parsed.focusView || "all";
+                        state.fontFamily = parsed.fontFamily || "Cinzel";
+                        state.fontSize = parsed.fontSize || 32;
+                        state.soundEnabled = parsed.soundEnabled !== undefined ? parsed.soundEnabled : true;
+                        state.vibrateEnabled = parsed.vibrateEnabled !== undefined ? parsed.vibrateEnabled : true;
+                        state.customColors = parsed.customColors || { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                        
+                        if (state.mantras.length > 0) {
+                            state.selectedMantraId = state.mantras[0].id;
+                        }
+                    }
+                } catch(e) {
+                    console.error("Local data restore skipped.", e);
+                }
+            }
+        }
+
+        function saveDatabaseToTransientCache() {
+            try {
+                localStorage.setItem('__japa_sanctuary_db_backup', JSON.stringify(state));
+            } catch(e) {
+                // Safeguard storage limitations
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `sadhana_sanctuary_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast("Backup exported.");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && Array.isArray(parsed.mantras)) {
+                        state = { ...state, ...parsed };
+                        saveDatabaseToTransientCache();
+                        applyThemeConfigStyles();
+                        populateMantraSelector();
+                        setFocusView(state.focusView || "all");
+                        renderAll();
+                        showToast("Treasury restored!");
+                        switchTab('japa');
+                    } else {
+                        showToast("Invalid backup structure.", true);
+                    }
+                } catch (err) {
+                    showToast("Error reading file.", true);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetAll() {
+            if (confirm("Restore everything to default templates? Current changes will be overwritten.")) {
+                state.mantras = [...initialMantras];
+                state.selectedMantraId = "stotra-shrisuktam";
+                state.highlightMode = "phrase";
+                state.focusView = "all";
+                state.fontFamily = "Cinzel";
+                state.fontSize = 32;
+                state.customColors = { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                saveDatabaseToTransientCache();
+                applyThemeConfigStyles();
+                populateMantraSelector();
+                setFocusView("all");
+                renderAll();
+                showToast("Cleared to default seeds.");
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Presentation Theme Configuration
+        // ---------------------------------------------------------------------
+        function applyThemeConfigStyles() {
+            const styleNode = document.getElementById('custom-theme-variables');
+            let fontStack = "";
+            switch (state.fontFamily) {
+                case 'Cinzel': fontStack = "'Cinzel', serif"; break;
+                case 'Playfair Display': fontStack = "'Playfair Display', serif"; break;
+                case 'Mukta': fontStack = "'Mukta', sans-serif"; break;
+                case 'Caveat': fontStack = "'Caveat', cursive"; break;
+                case 'Montserrat': fontStack = "'Montserrat', sans-serif"; break;
+                default: fontStack = "'Cinzel', serif";
+            }
+            
+            styleNode.innerHTML = `
+                :root {
+                    --japa-bg: ${state.customColors.bg};
+                    --japa-dim: ${state.customColors.dim};
+                    --japa-active: ${state.customColors.active};
+                    --japa-font: ${fontStack};
+                }
+            `;
+
+            document.getElementById('picker-bg').value = state.customColors.bg;
+            document.getElementById('picker-dim').value = state.customColors.dim;
+            document.getElementById('picker-active').value = state.customColors.active;
+
+            document.getElementById('font-family-selector').value = state.fontFamily;
+            document.getElementById('input-font-size').value = state.fontSize;
+            document.getElementById('font-scale-label').textContent = state.fontSize + "px";
+            document.getElementById('sound-toggle').checked = state.soundEnabled;
+            document.getElementById('vibrate-toggle').checked = state.vibrateEnabled;
+        }
+
+        function applyPreset(presetName) {
+            switch(presetName) {
+                case 'somnath':
+                    state.customColors = { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                    state.fontFamily = "Cinzel";
+                    break;
+                case 'saffron':
+                    state.customColors = { bg: "#1a0f00", dim: "#593c1a", active: "#ff9933" };
+                    state.fontFamily = "Cinzel";
+                    break;
+                case 'meadow':
+                    state.customColors = { bg: "#03140e", dim: "#1b4332", active: "#4ade80" };
+                    state.fontFamily = "Mukta";
+                    break;
+                case 'sarawati':
+                    state.customColors = { bg: "#fafaf9", dim: "#a8a29e", active: "#d97706" };
+                    state.fontFamily = "Playfair Display";
+                    break;
+            }
+            applyThemeConfigStyles();
+            saveDatabaseToTransientCache();
+            renderAll();
+            showToast(`Preset themed.`);
+        }
+
+        function updateCustomColors() {
+            state.customColors.bg = document.getElementById('picker-bg').value;
+            state.customColors.dim = document.getElementById('picker-dim').value;
+            state.customColors.active = document.getElementById('picker-active').value;
+            applyThemeConfigStyles();
+            saveDatabaseToTransientCache();
+            renderAll();
+        }
+
+        function setFontFamily(font) {
+            state.fontFamily = font;
+            applyThemeConfigStyles();
+            saveDatabaseToTransientCache();
+            renderAll();
+        }
+
+        function setFontSize(size) {
+            state.fontSize = size;
+            document.getElementById('font-scale-label').textContent = size + "px";
+            const textBox = document.getElementById('mantra-text-box');
+            if (textBox) {
+                textBox.style.fontSize = size + "px";
+            }
+            saveDatabaseToTransientCache();
+        }
+
+        function setFocusView(mode) {
+            state.focusView = mode;
+            const buttons = ['all', 'hide-completed', 'active-only'];
+            buttons.forEach(b => {
+                const btn = document.getElementById(`focus-btn-${b}`);
+                if (b === mode) {
+                    btn.className = "px-3 py-1.5 rounded text-xs transition duration-150 font-bold bg-amber-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded text-xs transition duration-150 font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/40";
+                }
+            });
+
+            if (mode === 'all') {
+                state.hidePreviousLines = false;
+                state.hideUpcomingLines = false;
+            } else if (mode === 'hide-completed') {
+                state.hidePreviousLines = true;
+                state.hideUpcomingLines = false;
+            } else if (mode === 'active-only') {
+                state.hidePreviousLines = true;
+                state.hideUpcomingLines = true;
+            }
+
+            saveDatabaseToTransientCache();
+            renderAll();
+        }
+
+        function setHighlightMode(mode) {
+            state.highlightMode = mode;
+            
+            const phraseBtn = document.getElementById('btn-mode-phrase');
+            const lineBtn = document.getElementById('btn-mode-line');
+            if (mode === 'phrase') {
+                phraseBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold";
+                lineBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal";
+                document.getElementById('highlight-mode-badge').textContent = "Phrase Mode";
+            } else {
+                lineBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold";
+                phraseBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal";
+                document.getElementById('highlight-mode-badge').textContent = "Line Mode";
+            }
+
+            resetHighlightState();
+            saveDatabaseToTransientCache();
+        }
+
+        function toggleSound(enabled) {
+            state.soundEnabled = enabled;
+            saveDatabaseToTransientCache();
+        }
+
+        function toggleVibrate(enabled) {
+            state.vibrateEnabled = enabled;
+            saveDatabaseToTransientCache();
+        }
+
+        function toggleSettingsModal(show) {
+            const modal = document.getElementById('settings-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Highlighting Logic Engine
+        // ---------------------------------------------------------------------
+        function getSelectedMantra() {
+            return state.mantras.find(m => m.id === state.selectedMantraId) || state.mantras[0];
+        }
+
+        // Standardized 3D Sacred Parser (Paragraph -> Line -> Word)
+        function parseSacredText(text) {
+            const paragraphs = text.split(/\n\s*\n/)
+                .map(p => p.trim())
+                .filter(p => p.length > 0);
+            
+            return paragraphs.map(p => {
+                return p.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0)
+                    .map(line => line.split(/\s+/).filter(word => word.length > 0));
+            });
+        }
+
+        function resetHighlightState() {
+            state.activeParagraphIndex = 0;
+            state.activeLineIndex = 0;
+            state.activeWordIndex = -1;
+            
+            // Sync quick-jump selectors on resetting round
+            const jumper = document.getElementById('stotra-stanza-jumper');
+            if (jumper) jumper.value = 0;
+
+            renderAll();
+        }
+
+        function handleStepForward() {
+            const item = getSelectedMantra();
+            const parsed = parseSacredText(item.text);
+            if (parsed.length === 0) return;
+
+            triggerVibration(15);
+
+            const currentParagraph = parsed[state.activeParagraphIndex];
+            const currentLine = currentParagraph[state.activeLineIndex];
+
+            if (state.highlightMode === 'phrase') {
+                if (state.activeWordIndex === -1) {
+                    state.activeWordIndex = 0;
+                } else if (state.activeWordIndex < currentLine.length - 1) {
+                    state.activeWordIndex++;
+                } else {
+                    // Line fully completed
+                    if (state.activeLineIndex < currentParagraph.length - 1) {
+                        state.activeLineIndex++;
+                        state.activeWordIndex = 0;
+                    } else {
+                        // Paragraph completed
+                        if (state.activeParagraphIndex < parsed.length - 1) {
+                            state.activeParagraphIndex++;
+                            state.activeLineIndex = 0;
+                            state.activeWordIndex = 0;
+                            showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
+                            
+                            // Update quick jump selector visually
+                            const jumper = document.getElementById('stotra-stanza-jumper');
+                            if (jumper) jumper.value = state.activeParagraphIndex;
+                        } else {
+                            // Entire text read completed!
+                            completeOneFullChant(item);
+                            resetHighlightState();
+                        }
+                    }
+                }
+            } else {
+                // Line Mode Highlight Execution
+                if (state.activeLineIndex < currentParagraph.length - 1) {
+                    state.activeLineIndex++;
+                } else {
+                    // Current Paragraph End
+                    if (state.activeParagraphIndex < parsed.length - 1) {
+                        state.activeParagraphIndex++;
+                        state.activeLineIndex = 0;
+                        showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
+                        
+                        const jumper = document.getElementById('stotra-stanza-jumper');
+                        if (jumper) jumper.value = state.activeParagraphIndex;
+                    } else {
+                        completeOneFullChant(item);
+                        resetHighlightState();
+                    }
+                }
+            }
+
+            renderJapaScreen();
+        }
+
+        function handleStepBackward() {
+            const item = getSelectedMantra();
+            const parsed = parseSacredText(item.text);
+            if (parsed.length === 0) return;
+
+            triggerVibration(15);
+
+            const currentParagraph = parsed[state.activeParagraphIndex];
+
+            if (state.highlightMode === 'phrase') {
+                if (state.activeParagraphIndex === 0 && state.activeLineIndex === 0 && state.activeWordIndex === -1) {
+                    return; // already fully reset
+                }
+
+                if (state.activeWordIndex > 0) {
+                    state.activeWordIndex--;
+                } else if (state.activeWordIndex === 0) {
+                    state.activeWordIndex = -1;
+                } else {
+                    // WordIndex is -1. transition to previous line
+                    if (state.activeLineIndex > 0) {
+                        state.activeLineIndex--;
+                        state.activeWordIndex = currentParagraph[state.activeLineIndex].length - 1;
+                    } else {
+                        // transition to previous paragraph end
+                        if (state.activeParagraphIndex > 0) {
+                            state.activeParagraphIndex--;
+                            const prevParagraph = parsed[state.activeParagraphIndex];
+                            state.activeLineIndex = prevParagraph.length - 1;
+                            state.activeWordIndex = prevParagraph[state.activeLineIndex].length - 1;
+                            
+                            const jumper = document.getElementById('stotra-stanza-jumper');
+                            if (jumper) jumper.value = state.activeParagraphIndex;
+                        }
+                    }
+                }
+            } else {
+                // Line Mode Backward Transition
+                if (state.activeLineIndex > 0) {
+                    state.activeLineIndex--;
+                } else {
+                    if (state.activeParagraphIndex > 0) {
+                        state.activeParagraphIndex--;
+                        const prevParagraph = parsed[state.activeParagraphIndex];
+                        state.activeLineIndex = prevParagraph.length - 1;
+                        
+                        const jumper = document.getElementById('stotra-stanza-jumper');
+                        if (jumper) jumper.value = state.activeParagraphIndex;
+                    }
+                }
+            }
+
+            renderJapaScreen();
+        }
+
+        function handleKeyPress(e) {
+            const activeTag = document.activeElement.tagName.toLowerCase();
+            if (activeTag === 'input' || activeTag === 'textarea') return;
+
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                handleStepForward();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                handleStepBackward();
+            } else if (e.key === 'Escape' || e.key === 'r' || e.key === 'R') {
+                resetHighlightState();
+            }
+        }
+
+        function jumpToStanza(index) {
+            state.activeParagraphIndex = parseInt(index);
+            state.activeLineIndex = 0;
+            state.activeWordIndex = -1;
+            renderAll();
+            showToast(`Jumped to Stanza ${state.activeParagraphIndex + 1}`);
+        }
+
+        // ---------------------------------------------------------------------
+        // Sound and Tactile Feedback (Native Web Audio API Synthesis)
+        // ---------------------------------------------------------------------
+        function triggerVibration(pattern) {
+            if (state.vibrateEnabled && navigator.vibrate) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        function playTibetanBowlChime() {
+            if (!state.soundEnabled) return;
+            
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const fundamentalOsc = audioCtx.createOscillator();
+                const secondaryOverOsc = audioCtx.createOscillator();
+                const tertiaryOverOsc = audioCtx.createOscillator();
+                const mainGain = audioCtx.createGain();
+
+                fundamentalOsc.type = 'sine';
+                fundamentalOsc.frequency.setValueAtTime(185.0, audioCtx.currentTime); 
+
+                secondaryOverOsc.type = 'sine';
+                secondaryOverOsc.frequency.setValueAtTime(185.5, audioCtx.currentTime);
+
+                tertiaryOverOsc.type = 'sine';
+                tertiaryOverOsc.frequency.setValueAtTime(277.5, audioCtx.currentTime);
+
+                mainGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                mainGain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.15); // soft strike
+                mainGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 5.0); // decay ring
+
+                fundamentalOsc.connect(mainGain);
+                secondaryOverOsc.connect(mainGain);
+                tertiaryOverOsc.connect(mainGain);
+                mainGain.connect(audioCtx.destination);
+
+                fundamentalOsc.start();
+                secondaryOverOsc.start();
+                tertiaryOverOsc.start();
+
+                fundamentalOsc.stop(audioCtx.currentTime + 5.2);
+                secondaryOverOsc.stop(audioCtx.currentTime + 5.2);
+                tertiaryOverOsc.stop(audioCtx.currentTime + 5.2);
+            } catch(e) {
+                console.error("Web Audio API blocked or not supported.", e);
+            }
+        }
+
+        function triggerCompletionSparkles() {
+            const containerId = state.isFullscreen ? 'fs-sparkles-container' : 'sparkles-container';
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const totalSparkles = 24;
+            
+            for (let i = 0; i < totalSparkles; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark text-amber-500 font-serif font-bold pointer-events-none';
+                spark.textContent = 'ॐ';
+                spark.style.left = Math.random() * 90 + 5 + '%';
+                spark.style.bottom = '10%';
+                spark.style.fontSize = Math.random() * 16 + 10 + 'px';
+                spark.style.animationDelay = Math.random() * 0.4 + 's';
+                
+                container.appendChild(spark);
+                setTimeout(() => spark.remove(), 1600);
+            }
+        }
+
+        function completeOneFullChant(item) {
+            item.chants++;
+            saveDatabaseToTransientCache();
+            
+            playTibetanBowlChime();
+            triggerVibration([100, 50, 100]);
+            triggerCompletionSparkles();
+            
+            const messageType = item.type === 'stotra' ? 'recitation' : 'chant round';
+            showToast(`Completed ${messageType}! Total: ${item.chants}`);
+        }
+
+        // ---------------------------------------------------------------------
+        // Views & Render Engine
+        // ---------------------------------------------------------------------
+        function switchTab(tabId) {
+            state.currentTab = tabId;
+            
+            const tabs = ['japa', 'library', 'data'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabId) {
+                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 bg-amber-600 text-white shadow-lg";
+                    document.getElementById(`section-${t}`).classList.remove('hidden');
+                } else {
+                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white";
+                    document.getElementById(`section-${t}`).classList.add('hidden');
+                }
+            });
+
+            renderAll();
+        }
+
+        function populateMantraSelector() {
+            const selector = document.getElementById('mantra-selector');
+            selector.innerHTML = '';
+            
+            state.mantras.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                const typeLabel = m.type === 'stotra' ? 'Stotra' : 'Mantra';
+                opt.textContent = `[${typeLabel}] ${m.deity} - ${m.title}`;
+                if (m.id === state.selectedMantraId) {
+                    opt.selected = true;
+                }
+                selector.appendChild(opt);
+            });
+        }
+
+        function selectMantra(id) {
+            state.selectedMantraId = id;
+            resetHighlightState();
+            saveDatabaseToTransientCache();
+            renderAll();
+        }
+
+        function renderAll() {
+            if (state.currentTab === 'japa') {
+                renderJapaScreen();
+            } else if (state.currentTab === 'library') {
+                renderLibrary();
+            }
+        }
+
+        function renderJapaScreen() {
+            const item = getSelectedMantra();
+            const parsed = parseSacredText(item.text);
+
+            // 1. Sync labels based on Mantra vs Stotra
+            const japaCounterLabel = document.getElementById('japa-counter-label');
+            const malaStatsBlock = document.getElementById('mala-stats-block');
+            const fsCounterLabel = document.getElementById('fs-counter-label');
+
+            if (item.type === 'stotra') {
+                japaCounterLabel.textContent = "Recitations";
+                malaStatsBlock.classList.add('hidden');
+                if (fsCounterLabel) fsCounterLabel.textContent = "Recitations";
+            } else {
+                japaCounterLabel.textContent = "Chants Logged";
+                malaStatsBlock.classList.remove('hidden');
+                if (fsCounterLabel) fsCounterLabel.textContent = "Chants";
+            }
+
+            // Sync metrics numbers
+            const currentTotal = item.chants;
+            document.getElementById('japa-counter').textContent = currentTotal;
+            document.getElementById('malas-counter').textContent = Math.floor(currentTotal / 108);
+
+            const fsCounter = document.getElementById('fs-counter');
+            if (fsCounter) fsCounter.textContent = currentTotal;
+            const fsTitle = document.getElementById('fs-mantra-title');
+            if (fsTitle) fsTitle.textContent = item.title;
+            const fsDeity = document.getElementById('fs-deity');
+            if (fsDeity) fsDeity.textContent = item.deity;
+
+            // 2. Build Stotra Jumper and Progress Bars
+            const jumperBlock = document.getElementById('stotra-navigation-block');
+            const jumperSelect = document.getElementById('stotra-stanza-jumper');
+            
+            const progressWrapper = document.getElementById('stotra-progress-wrapper');
+            const progressBar = document.getElementById('stotra-progress-bar');
+            const progressLabel = document.getElementById('stotra-progress-label');
+
+            const fsProgressWrapper = document.getElementById('fs-stotra-progress-wrapper');
+            const fsProgressBar = document.getElementById('fs-stotra-progress-bar');
+            const fsProgressLabel = document.getElementById('fs-stotra-progress-label');
+
+            if (item.type === 'stotra' && parsed.length > 1) {
+                // Show Jumper Selectors
+                jumperBlock.classList.remove('hidden');
+                jumperBlock.classList.add('flex');
+                
+                // Keep jumper choices in sync
+                jumperSelect.innerHTML = '';
+                parsed.forEach((_, pIdx) => {
+                    const opt = document.createElement('option');
+                    opt.value = pIdx;
+                    opt.textContent = `Stanza ${pIdx + 1}`;
+                    if (pIdx === state.activeParagraphIndex) {
+                        opt.selected = true;
+                    }
+                    jumperSelect.appendChild(opt);
+                });
+
+                // Calculate Progressive lines
+                let totalLines = 0;
+                let activeCompletedLines = 0;
+                parsed.forEach((para, pIdx) => {
+                    totalLines += para.length;
+                    if (pIdx < state.activeParagraphIndex) {
+                        activeCompletedLines += para.length;
+                    } else if (pIdx === state.activeParagraphIndex) {
+                        activeCompletedLines += state.activeLineIndex;
+                    }
+                });
+
+                const percentage = totalLines > 0 ? Math.floor((activeCompletedLines / totalLines) * 100) : 0;
+                
+                // Render Inline Progress
+                progressWrapper.classList.remove('hidden');
+                progressBar.style.width = `${percentage}%`;
+                progressLabel.classList.remove('hidden');
+                progressLabel.textContent = `Stanza ${state.activeParagraphIndex + 1} of ${parsed.length} (${percentage}% Complete)`;
+
+                // Render Fullscreen Progress
+                if (fsProgressWrapper) {
+                    fsProgressWrapper.classList.remove('hidden');
+                    fsProgressBar.style.width = `${percentage}%`;
+                    fsProgressLabel.classList.remove('hidden');
+                    fsProgressLabel.textContent = `Stanza ${state.activeParagraphIndex + 1} of ${parsed.length} (${percentage}% Complete)`;
+                }
+
+            } else {
+                // Hide Stotra specific visual units
+                jumperBlock.classList.remove('flex');
+                jumperBlock.classList.add('hidden');
+                progressWrapper.classList.add('hidden');
+                progressLabel.classList.add('hidden');
+                if (fsProgressWrapper) {
+                    fsProgressWrapper.classList.add('hidden');
+                    fsProgressLabel.classList.add('hidden');
+                }
+            }
+
+            // 3. Render Highlighting text
+            const displayBox = document.getElementById('mantra-text-box');
+            const fsDisplayBox = document.getElementById('fs-mantra-text-box');
+
+            displayBox.style.fontSize = state.fontSize + "px";
+            displayBox.innerHTML = '';
+
+            if (fsDisplayBox) {
+                fsDisplayBox.style.fontSize = Math.max(28, Math.floor(state.fontSize * 1.3)) + "px";
+                fsDisplayBox.innerHTML = '';
+            }
+
+            // Loop 3D layout Structure
+            parsed.forEach((paragraph, pIdx) => {
+                
+                // Build a visual paragraph spacer stanza container
+                const paraDiv = document.createElement('div');
+                paraDiv.className = 'w-full mb-6 last:mb-0 space-y-4 transition-all duration-300';
+                
+                let fsParaDiv;
+                if (fsDisplayBox) {
+                    fsParaDiv = document.createElement('div');
+                    fsParaDiv.className = 'w-full mb-8 last:mb-0 space-y-6 transition-all duration-300';
+                }
+
+                let paraHasVisibleLines = false;
+
+                paragraph.forEach((lineWords, lineIdx) => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'w-full flex flex-wrap justify-center gap-x-4 transition-all duration-300';
+                    
+                    let fsLineDiv;
+                    if (fsDisplayBox) {
+                        fsLineDiv = document.createElement('div');
+                        fsLineDiv.className = 'w-full flex flex-wrap justify-center gap-x-6 transition-all duration-300';
+                    }
+
+                    // Compute precise line state (Previous, Active, Upcoming)
+                    const isPreviousLine = (pIdx < state.activeParagraphIndex) || 
+                                           (pIdx === state.activeParagraphIndex && lineIdx < state.activeLineIndex);
+                    
+                    const isUpcomingLine = (pIdx > state.activeParagraphIndex) || 
+                                           (pIdx === state.activeParagraphIndex && lineIdx > state.activeLineIndex);
+                    
+                    const isActiveLine = (pIdx === state.activeParagraphIndex && lineIdx === state.activeLineIndex);
+
+                    // Check Focus View modifiers to see if this line is rendered
+                    let isVisible = true;
+                    if (state.hidePreviousLines && isPreviousLine) isVisible = false;
+                    if (state.hideUpcomingLines && isUpcomingLine) isVisible = false;
+
+                    if (isVisible) {
+                        paraHasVisibleLines = true;
+
+                        // Apply Faded lighting to inactive lines
+                        if (isActiveLine) {
+                            lineDiv.style.opacity = "1";
+                            lineDiv.style.transform = "scale(1.02)";
+                            if (fsLineDiv) {
+                                fsLineDiv.style.opacity = "1";
+                                fsLineDiv.style.transform = "scale(1.04)";
+                            }
+                        } else {
+                            lineDiv.style.opacity = "0.35";
+                            if (fsLineDiv) fsLineDiv.style.opacity = "0.2";
+                        }
+
+                        // Generate highlights for individual words
+                        lineWords.forEach((word, wordIdx) => {
+                            const span = document.createElement('span');
+                            span.className = 'transition-all duration-300 transform rounded px-1';
+                            span.textContent = word;
+
+                            let fsSpan;
+                            if (fsDisplayBox) {
+                                fsSpan = document.createElement('span');
+                                fsSpan.className = 'transition-all duration-300 transform rounded px-2';
+                                fsSpan.textContent = word;
+                            }
+
+                            let isHighlighted = false;
+
+                            if (state.highlightMode === 'phrase') {
+                                if (isPreviousLine) {
+                                    isHighlighted = true;
+                                } else if (isActiveLine && wordIdx <= state.activeWordIndex) {
+                                    isHighlighted = true;
+                                }
+                            } else {
+                                // Line level highlight highlights everything in active or completed lines
+                                if (isPreviousLine || isActiveLine) {
+                                    isHighlighted = true;
+                                }
+                            }
+
+                            if (isHighlighted) {
+                                span.style.color = 'var(--japa-active)';
+                                span.style.textShadow = '0 0 15px var(--japa-active)';
+                                span.style.fontWeight = 'bold';
+                                if (state.highlightMode === 'phrase' && isActiveLine && wordIdx === state.activeWordIndex) {
+                                    span.style.transform = 'scale(1.1)';
+                                }
+
+                                if (fsSpan) {
+                                    fsSpan.style.color = 'var(--japa-active)';
+                                    fsSpan.style.textShadow = '0 0 25px var(--japa-active)';
+                                    fsSpan.style.fontWeight = 'bold';
+                                    if (state.highlightMode === 'phrase' && isActiveLine && wordIdx === state.activeWordIndex) {
+                                        fsSpan.style.transform = 'scale(1.15)';
+                                    }
+                                }
+                            } else {
+                                span.style.color = 'var(--japa-dim)';
+                                if (fsSpan) fsSpan.style.color = 'var(--japa-dim)';
+                            }
+
+                            lineDiv.appendChild(span);
+                            if (fsSpan) fsLineDiv.appendChild(fsSpan);
+                        });
+
+                        paraDiv.appendChild(lineDiv);
+                        if (fsDisplayBox && fsLineDiv) {
+                            fsParaDiv.appendChild(fsLineDiv);
+                        }
+                    }
+                });
+
+                if (paraHasVisibleLines) {
+                    // Show small Stanza indicators if dealing with long stotras in default layout
+                    if (item.type === 'stotra' && parsed.length > 1 && !state.hidePreviousLines) {
+                        const marker = document.createElement('div');
+                        marker.className = 'text-[10px] tracking-widest text-amber-500/40 uppercase font-mono border-b border-gray-800/20 pb-1 mb-2 text-center';
+                        marker.textContent = `— Stanza ${pIdx + 1} —`;
+                        paraDiv.prepend(marker);
+                        
+                        if (fsDisplayBox && fsParaDiv) {
+                            const fsMarker = document.createElement('div');
+                            fsMarker.className = 'text-[11px] tracking-widest text-amber-500/30 uppercase font-mono border-b border-white/5 pb-1 mb-3 text-center';
+                            fsMarker.textContent = `— Stanza ${pIdx + 1} —`;
+                            fsParaDiv.prepend(fsMarker);
+                        }
+                    }
+
+                    displayBox.appendChild(paraDiv);
+                    if (fsDisplayBox && fsParaDiv) {
+                        fsDisplayBox.appendChild(fsParaDiv);
+                    }
+                }
+            });
+
+            // Update footer line markers
+            const lineIndicator = document.getElementById('active-line-indicator');
+            const totalLinesInPara = parsed[state.activeParagraphIndex] ? parsed[state.activeParagraphIndex].length : 1;
+            lineIndicator.textContent = `Stanza ${state.activeParagraphIndex + 1} • Line ${state.activeLineIndex + 1} of ${totalLinesInPara}`;
+        }
+
+        function renderLibrary() {
+            const vault = document.getElementById('mantras-vault-container');
+            vault.innerHTML = '';
+
+            document.getElementById('total-library-count').textContent = `${state.mantras.length} Items`;
+
+            const groups = {};
+            state.mantras.forEach(m => {
+                if (!groups[m.deity]) {
+                    groups[m.deity] = [];
+                }
+                groups[m.deity].push(m);
+            });
+
+            Object.keys(groups).forEach(deity => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'space-y-2';
+
+                const header = document.createElement('h4');
+                header.className = 'text-xs uppercase tracking-widest text-amber-500 font-bold border-b border-gray-800/80 pb-1 mt-3 flex items-center gap-1.5';
+                header.innerHTML = `<span>🔱</span> ${deity}`;
+                groupDiv.appendChild(header);
+
+                groups[deity].forEach(m => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-gray-950/40 border border-gray-850 p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gray-800 transition duration-150';
+
+                    const labelBadge = m.type === 'stotra' ? 'Stotra' : 'Mantra';
+                    const labelStyle = m.type === 'stotra' ? 'bg-indigo-950/40 text-indigo-400 border-indigo-900/40' : 'bg-amber-950/20 text-amber-500 border-amber-900/30';
+                    const counterUnit = m.type === 'stotra' ? 'recitations' : 'chants';
+
+                    const details = document.createElement('div');
+                    details.className = 'space-y-1';
+                    details.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-gray-200 font-serif">${m.title}</span>
+                            <span class="text-[10px] border px-2 py-0.5 rounded-full font-mono font-semibold ${labelStyle}">${labelBadge}</span>
+                            <span class="text-[10px] bg-gray-900 text-gray-400 border border-gray-800 px-1.5 py-0.5 rounded-full font-mono">${m.chants} ${counterUnit}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 font-mono italic truncate max-w-md">${m.text.replace(/\n/g, ' | ')}</p>
+                    `;
+                    card.appendChild(details);
+
+                    const actions = document.createElement('div');
+                    actions.className = 'flex gap-2 w-full md:w-auto justify-end';
+                    actions.innerHTML = `
+                        <button onclick="quickSelectForJapa('${m.id}')" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition">Load</button>
+                        <button onclick="resetMantraChants('${m.id}')" class="text-xs border border-gray-800 text-gray-400 hover:text-gray-200 px-2.5 py-1 rounded transition">Reset</button>
+                        <button onclick="deleteMantra('${m.id}')" class="text-xs border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-950/30 px-2.5 py-1 rounded transition">Delete</button>
+                    `;
+                    card.appendChild(actions);
+
+                    groupDiv.appendChild(card);
+                });
+
+                vault.appendChild(groupDiv);
+            });
+        }
+
+        // ---------------------------------------------------------------------
+        // Library Actions
+        // ---------------------------------------------------------------------
+        function setFormType(type) {
+            state.formType = type;
+            const mantraBtn = document.getElementById('form-type-mantra');
+            const stotraBtn = document.getElementById('form-type-stotra');
+            const hint = document.getElementById('form-text-hint');
+
+            if (type === 'mantra') {
+                mantraBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                stotraBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                hint.textContent = "Enter lines (usually loops continuously)";
+            } else {
+                stotraBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                mantraBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                hint.textContent = "Separate stanzas/paragraphs using double Enter";
+            }
+        }
+
+        function saveMantra() {
+            const deityInput = document.getElementById('input-deity').value.trim();
+            const titleInput = document.getElementById('input-title').value.trim();
+            const textInput = document.getElementById('input-text').value.trim();
+
+            if (!deityInput || !titleInput || !textInput) {
+                showToast("Please complete all input spaces.", true);
+                return;
+            }
+
+            const newComposition = {
+                id: `sacred-${Date.now()}`,
+                deity: deityInput,
+                title: titleInput,
+                text: textInput,
+                type: state.formType,
+                chants: 0
+            };
+
+            state.mantras.push(newComposition);
+            state.selectedMantraId = newComposition.id;
+            
+            document.getElementById('input-deity').value = '';
+            document.getElementById('input-title').value = '';
+            document.getElementById('input-text').value = '';
+
+            saveDatabaseToTransientCache();
+            populateMantraSelector();
+            resetHighlightState();
+            renderAll();
+            showToast(`Added "${titleInput}" to Treasury!`);
+        }
+
+        function quickSelectForJapa(id) {
+            selectMantra(id);
+            switchTab('japa');
+            showToast("Sadhana loaded.");
+        }
+
+        function resetMantraChants(id) {
+            const m = state.mantras.find(x => x.id === id);
+            if (m && confirm(`Are you sure you want to reset metrics for "${m.title}"?`)) {
+                m.chants = 0;
+                saveDatabaseToTransientCache();
+                renderAll();
+                showToast("Metrics cleared.");
+            }
+        }
+
+        function resetCurrentMantraStats() {
+            const m = getSelectedMantra();
+            resetMantraChants(m.id);
+        }
+
+        function deleteMantra(id) {
+            if (state.mantras.length <= 1) {
+                showToast("Cannot empty the sanctuary completely.", true);
+                return;
+            }
+
+            const m = state.mantras.find(x => x.id === id);
+            if (m && confirm(`Delete "${m.title}" permanently from vault?`)) {
+                state.mantras = state.mantras.filter(x => x.id !== id);
+                if (state.selectedMantraId === id) {
+                    state.selectedMantraId = state.mantras[0].id;
+                }
+                saveDatabaseToTransientCache();
+                populateMantraSelector();
+                resetHighlightState();
+                renderAll();
+                showToast("Removed.");
+            }
+        }
+
+        function toggleFullscreenMode(show) {
+            state.isFullscreen = show;
+            const overlay = document.getElementById('fullscreen-overlay');
+            if (!overlay) return;
+
+            if (show) {
+                overlay.classList.remove('hidden');
+                try {
+                    const docEl = document.documentElement;
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen();
+                    } else if (docEl.webkitRequestFullscreen) {
+                        docEl.webkitRequestFullscreen();
+                    } else if (docEl.msRequestFullscreen) {
+                        docEl.msRequestFullscreen();
+                    }
+                } catch(err) {
+                    console.debug("Native fullscreen block active.");
+                }
+                renderJapaScreen();
+            } else {
+                overlay.classList.add('hidden');
+                try {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
+                } catch(err) {
+                    console.debug("Native exit block active.");
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Notification Mechanics
+        // ---------------------------------------------------------------------
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-message');
+
+            icon.textContent = isError ? '⚠' : '✦';
+            icon.className = isError ? 'text-rose-500 font-bold animate-bounce' : 'text-amber-500 font-bold';
+            text.textContent = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
