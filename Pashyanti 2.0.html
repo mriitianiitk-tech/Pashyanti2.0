@@ -9,12 +9,20 @@
     <!-- Google Fonts for Meditative Aesthetics -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Mukta:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Mukta:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Martel:wght@400;700;900&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
     
     <style>
         /* Smooth state transitions */
         .transition-all-custom {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Smooth and natural word scaling */
+        .japa-word {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.25s ease, text-shadow 0.25s ease;
+            transform-origin: center;
+            will-change: transform;
         }
         
         /* Floating animations for completed sparks */
@@ -39,6 +47,7 @@
         /* Customize scrollbars subtly */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05);
@@ -49,6 +58,207 @@
         }
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 153, 51, 0.4);
+        }
+
+        /* Hide scrollbars for Japa window */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none !important;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none !important;  /* IE and Edge */
+            scrollbar-width: none !important;  /* Firefox */
+        }
+
+        /* Light Mode Styling Overrides */
+        body.light-mode {
+            background-color: #f3f4f6 !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode header {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode header h1 {
+            color: #d97706 !important; /* amber-600 */
+        }
+        body.light-mode nav {
+            background-color: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode nav button:not(.bg-amber-600) {
+            color: #4b5563 !important;
+        }
+        body.light-mode nav button:not(.bg-amber-600):hover {
+            color: #111827 !important;
+        }
+        body.light-mode select,
+        body.light-mode input,
+        body.light-mode textarea {
+            background-color: #ffffff !important;
+            border-color: #d1d5db !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode .bg-gray-950\/30 {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+        body.light-mode .bg-gray-950\/20 {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode .bg-gray-900\/50 {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode .bg-gray-900\/40 {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode .bg-gray-900\/60 {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .bg-gray-900 {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .bg-gray-950\/40 {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .text-gray-400 {
+            color: #4b5563 !important;
+        }
+        body.light-mode .text-gray-300 {
+            color: #374151 !important;
+        }
+        body.light-mode .text-gray-500 {
+            color: #6b7280 !important;
+        }
+        body.light-mode .text-rose-400 {
+            color: #e11d48 !important; /* Rose-600 */
+        }
+        body.light-mode .bg-rose-950\/10 {
+            background-color: rgba(254, 226, 226, 0.5) !important;
+            border-color: rgba(254, 202, 202, 0.5) !important;
+        }
+        body.light-mode .border-gray-800\/40 {
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode .border-gray-800\/60 {
+            border-color: rgba(229, 231, 235, 0.8) !important;
+        }
+        body.light-mode .border-gray-850 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #settings-modal > div {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #settings-modal button {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #settings-modal button:hover {
+            background-color: #f3f4f6 !important;
+        }
+        body.light-mode #settings-modal .bg-slate-950 {
+            background-color: #f9fafb !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #settings-modal .bg-slate-950 .text-gray-200 {
+            color: #1f2937 !important;
+        }
+        body.light-mode #settings-modal .border-gray-850 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #settings-modal .border-gray-800\/80 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #stotra-stanza-jumper {
+            background-color: #ffffff !important;
+            border-color: #d1d5db !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #focus-btn-all,
+        body.light-mode #focus-btn-hide-completed,
+        body.light-mode #focus-btn-active-only,
+        body.light-mode #focus-btn-word-only {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #focus-btn-all:not(.bg-amber-600),
+        body.light-mode #focus-btn-hide-completed:not(.bg-amber-600),
+        body.light-mode #focus-btn-active-only:not(.bg-amber-600),
+        body.light-mode #focus-btn-word-only:not(.bg-amber-600) {
+            color: #4b5563 !important;
+        }
+        body.light-mode #focus-btn-all:not(.bg-amber-600):hover,
+        body.light-mode #focus-btn-hide-completed:not(.bg-amber-600):hover,
+        body.light-mode #focus-btn-active-only:not(.bg-amber-600):hover,
+        body.light-mode #focus-btn-word-only:not(.bg-amber-600):hover {
+            background-color: #f3f4f6 !important;
+            color: #111827 !important;
+        }
+        body.light-mode #stotra-navigation-block {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #stotra-navigation-block span {
+            color: #4b5563 !important;
+        }
+        body.light-mode .text-amber-500\/70 {
+            color: rgba(217, 119, 6, 0.9) !important;
+        }
+        body.light-mode #mala-stats-block .text-gray-300 {
+            color: #1f2937 !important;
+        }
+        body.light-mode #japa-counter-label,
+        body.light-mode #mala-stats-block + div {
+            color: #4b5563 !important;
+        }
+        body.light-mode #toast {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+            color: #1f2937 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        body.light-mode .spark {
+            color: #d97706 !important;
+        }
+        body.light-mode #mantras-vault-container > div h4 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #mantras-vault-container .bg-gray-950\/40 {
+            background-color: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #mantras-vault-container .bg-gray-950\/40 span.text-gray-200 {
+            color: #1f2937 !important;
+        }
+        body.light-mode #mantras-vault-container .bg-gray-950\/40 p.text-gray-400 {
+            color: #6b7280 !important;
+        }
+        body.light-mode #mantras-vault-container .border-gray-850 {
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #mantras-vault-container button.border-gray-800 {
+            border-color: #d1d5db !important;
+            color: #4b5563 !important;
+        }
+        body.light-mode #mantras-vault-container button.border-gray-800:hover {
+            background-color: #f3f4f6 !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #fullscreen-overlay {
+            background-color: var(--japa-bg) !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode #fs-stotra-progress-wrapper {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-mode #fullscreen-overlay .bg-black\/40 {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border-color: rgba(229, 231, 235, 0.8) !important;
         }
     </style>
 </head>
@@ -146,6 +356,9 @@
                         <button onclick="setFocusView('active-only')" id="focus-btn-active-only" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
                             Active Only
                         </button>
+                        <button onclick="setFocusView('word-only')" id="focus-btn-word-only" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
+                            Word Only
+                        </button>
                     </div>
                 </div>
 
@@ -159,7 +372,7 @@
             </div>
 
             <!-- Main Meditative Chanting Space -->
-            <div id="japa-display-container" class="relative rounded-2xl p-6 md:p-14 flex flex-col justify-center items-center shadow-2xl transition-all-custom border border-gray-800/40 overflow-hidden min-h-[380px] text-center" style="background-color: var(--japa-bg);">
+            <div id="japa-display-container" class="relative rounded-2xl p-6 md:p-14 flex flex-col justify-center items-center shadow-2xl transition-all-custom border border-gray-800/40 overflow-hidden min-h-[480px] text-center" style="background-color: var(--japa-bg);">
                 
                 <!-- Floating sparks system container -->
                 <div id="sparkles-container" class="absolute inset-0 pointer-events-none"></div>
@@ -171,7 +384,7 @@
                 </div>
 
                 <!-- Central Sacred Mantra Box -->
-                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[50vh] overflow-y-auto" style="font-family: var(--japa-font); font-size: 32px;">
+                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar" style="font-family: var(--japa-font); font-size: 32px;">
                     <!-- Mantra/Stotra tokens loaded dynamically -->
                 </div>
 
@@ -188,6 +401,25 @@
                     <div class="opacity-40 text-[11px] tracking-wide font-mono hidden md:block">
                         Tip: <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Right Arrow</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Space</kbd> steps forward. <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Left Arrow</kbd> steps backward.
                     </div>
+                </div>
+            </div>
+
+            <!-- Auto Play Control Panel -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40 z-20 relative">
+                <div class="flex items-center gap-2">
+                    <button id="btn-auto-play" onclick="toggleAutoPlay()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-md shadow-emerald-900/10">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        Auto Chant
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400 font-mono">Speed:</span>
+                    <select id="auto-play-speed" onchange="changeAutoPlaySpeed(this.value)" class="bg-gray-900 border border-gray-800 text-gray-200 text-xs rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                        <option value="3000">Slow (3s)</option>
+                        <option value="2000" selected>Medium (2s)</option>
+                        <option value="1000">Fast (1s)</option>
+                        <option value="500">Very Fast (0.5s)</option>
+                    </select>
                 </div>
             </div>
 
@@ -248,9 +480,12 @@
                         <textarea id="input-text" rows="7" placeholder="Paste lines of text here. If stotra, hit Enter twice to build paragraphs." class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none font-mono"></textarea>
                     </div>
 
-                    <div class="pt-2">
-                        <button onclick="saveMantra()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md active:scale-95">
+                    <div class="pt-2 flex gap-2">
+                        <button id="btn-save-mantra" onclick="saveMantra()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md active:scale-95">
                             Commit to Treasury
+                        </button>
+                        <button id="btn-cancel-edit" onclick="cancelEditMantra()" class="hidden px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition active:scale-95 border border-gray-750">
+                            Cancel
                         </button>
                     </div>
                 </div>
@@ -330,8 +565,21 @@
             
             <h3 class="text-md font-bold text-amber-500 tracking-wider">Aesthetic Adjustments</h3>
 
-            <!-- Color Palette Presets -->
+            <!-- Theme Mode Selection -->
             <div class="space-y-2">
+                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Theme Mode</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="btn-theme-dark" onclick="setThemeMode('dark')" class="py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
+                        Dark Mode
+                    </button>
+                    <button id="btn-theme-light" onclick="setThemeMode('light')" class="py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                        Light Mode
+                    </button>
+                </div>
+            </div>
+
+            <!-- Color Palette Presets -->
+            <div class="space-y-2 border-t border-gray-800/80 pt-4">
                 <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Theme Presets</label>
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="applyPreset('somnath')" class="text-left p-2 rounded bg-slate-950 text-xs border border-gray-850 hover:bg-slate-900">
@@ -363,9 +611,48 @@
                     <span class="text-gray-400 font-semibold">Custom Non-Highlighted Text</span>
                     <input type="color" id="picker-dim" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
                 </div>
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-gray-400 font-semibold">Custom Highlighted Text</span>
-                    <input type="color" id="picker-active" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                
+                <div class="border-t border-gray-800/60 pt-3 space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Highlight Color Mode</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-color-mode-single" onclick="setHighlightColorMode('single')" class="py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
+                            Single Color
+                        </button>
+                        <button id="btn-color-mode-multi" onclick="setHighlightColorMode('multi')" class="py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                            Word Multi-Color
+                        </button>
+                    </div>
+                    
+                    <div id="single-color-picker-container" class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400 font-semibold">Custom Highlighted Text</span>
+                        <input type="color" id="picker-active" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
+                    </div>
+                    
+                    <div id="multi-color-pickers-container" class="hidden space-y-2">
+                        <span class="block text-[10px] text-gray-500 mb-1">Customize Word Colors (loops through words):</span>
+                        <div class="flex justify-between items-center gap-1 bg-black/20 p-2 rounded border border-gray-800/60">
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="text-[9px] text-gray-500">Word 1</span>
+                                <input type="color" id="picker-word-0" onchange="updateWordColor(0, this.value)" class="w-7 h-7 rounded border-none bg-transparent cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="text-[9px] text-gray-500">Word 2</span>
+                                <input type="color" id="picker-word-1" onchange="updateWordColor(1, this.value)" class="w-7 h-7 rounded border-none bg-transparent cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="text-[9px] text-gray-500">Word 3</span>
+                                <input type="color" id="picker-word-2" onchange="updateWordColor(2, this.value)" class="w-7 h-7 rounded border-none bg-transparent cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="text-[9px] text-gray-500">Word 4</span>
+                                <input type="color" id="picker-word-3" onchange="updateWordColor(3, this.value)" class="w-7 h-7 rounded border-none bg-transparent cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="text-[9px] text-gray-500">Word 5</span>
+                                <input type="color" id="picker-word-4" onchange="updateWordColor(4, this.value)" class="w-7 h-7 rounded border-none bg-transparent cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -382,6 +669,32 @@
                 </div>
             </div>
 
+            <!-- Individual Word Colors Assignor -->
+            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+                <div class="flex justify-between items-center">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Word Color Painter</label>
+                    <button onclick="clearWordColorMap()" class="text-[10px] text-rose-400 hover:text-rose-300 transition font-medium">Clear All Word Colors</button>
+                </div>
+                <p class="text-[10px] text-gray-500 leading-normal">
+                    Select a color below, then click any word in the preview box to paint it with that custom highlight color.
+                </p>
+                
+                <!-- Color Swatches (Palette selection) -->
+                <div class="flex items-center gap-2 bg-black/10 p-2 rounded border border-gray-800/60 justify-center">
+                    <button onclick="selectPaintColor('default')" id="swatch-default" class="w-6 h-6 rounded-full border-2 border-amber-500 flex items-center justify-center text-[10px] text-gray-450 bg-transparent" title="Default Highlight Color">✕</button>
+                    <button onclick="selectPaintColor(0)" id="swatch-0" class="w-6 h-6 rounded-full border-2 border-transparent bg-[#60a5fa]" title="Color 1"></button>
+                    <button onclick="selectPaintColor(1)" id="swatch-1" class="w-6 h-6 rounded-full border-2 border-transparent bg-[#34d399]" title="Color 2"></button>
+                    <button onclick="selectPaintColor(2)" id="swatch-2" class="w-6 h-6 rounded-full border-2 border-transparent bg-[#fb7185]" title="Color 3"></button>
+                    <button onclick="selectPaintColor(3)" id="swatch-3" class="w-6 h-6 rounded-full border-2 border-transparent bg-[#fbbf24]" title="Color 4"></button>
+                    <button onclick="selectPaintColor(4)" id="swatch-4" class="w-6 h-6 rounded-full border-2 border-transparent bg-[#a78bfa]" title="Color 5"></button>
+                </div>
+
+                <!-- Scrollable word list to paint -->
+                <div id="word-painter-preview" class="max-h-[140px] overflow-y-auto bg-black/20 p-3 rounded border border-gray-800/60 flex flex-wrap gap-2 justify-center font-serif leading-relaxed no-scrollbar select-none">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
             <!-- Font Adjustments -->
             <div class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div>
@@ -392,6 +705,18 @@
                         <option value="Mukta">Mukta (Perfect Transliteration)</option>
                         <option value="Caveat">Caveat (Intimate / Freehand)</option>
                         <option value="Montserrat">Montserrat (Minimalist Sans)</option>
+                        <option value="Martel">Martel (Devanagari Elegant Serif)</option>
+                        <option value="Rozha One">Rozha One (Devanagari Bold Display)</option>
+                        <option value="Yatra One">Yatra One (Devanagari Calligraphy)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1.5">Text Style</label>
+                    <select id="text-style-selector" onchange="setTextStyle(this.value)" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                        <option value="bold">Bold (Default)</option>
+                        <option value="italic">Italics</option>
+                        <option value="normal">Regular</option>
                     </select>
                 </div>
 
@@ -460,7 +785,7 @@
         <div class="flex-1 flex flex-col justify-center items-center relative overflow-hidden my-6">
             <div id="fs-sparkles-container" class="absolute inset-0 pointer-events-none"></div>
             <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant"></div>
-            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto" style="font-family: var(--japa-font); font-size: 42px;">
+            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar" style="font-family: var(--japa-font); font-size: 42px;">
                 <!-- Highlight synced content -->
             </div>
         </div>
@@ -533,11 +858,14 @@
             activeLineIndex: 0,
             activeWordIndex: -1, // -1 means nothing in active line is highlighted yet
             highlightMode: "phrase", // "phrase" or "line"
-            focusView: "all", // "all", "hide-completed", "active-only"
+            focusView: "all", // "all", "hide-completed", "active-only", "word-only"
             hidePreviousLines: false,
             hideUpcomingLines: false,
             fontFamily: "Cinzel",
             fontSize: 32,
+            japaTextStyle: "bold", // "bold", "italic", "normal"
+            highlightColorMode: "single", // "single", "multi"
+            themeMode: "dark", // "dark", "light"
             soundEnabled: true,
             vibrateEnabled: true,
             currentTab: "japa",
@@ -546,14 +874,18 @@
             customColors: {
                 bg: "#0c0f1d",
                 dim: "#374151",
-                active: "#60a5fa"
-            }
+                active: "#60a5fa",
+                wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"]
+            },
+            editingMantraId: null,
+            autoPlayIntervalId: null,
+            autoPlaySpeed: 2000
         };
 
         // Initialize state on start
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedDatabase();
-            applyThemeConfigStyles();
+            loadPreferencesFromMantra();
             populateMantraSelector();
             setFocusView(state.focusView || "all");
             renderAll();
@@ -574,6 +906,81 @@
         // ---------------------------------------------------------------------
         // Storage & Backup Mechanics
         // ---------------------------------------------------------------------
+        function getSelectedMantra() {
+            return state.mantras.find(m => m.id === state.selectedMantraId) || state.mantras[0];
+        }
+
+        function saveActivePreferencesToMantra() {
+            const m = getSelectedMantra();
+            if (!m) return;
+            
+            m.preferences = {
+                fontFamily: state.fontFamily,
+                fontSize: state.fontSize,
+                japaTextStyle: state.japaTextStyle,
+                highlightColorMode: state.highlightColorMode,
+                themeMode: state.themeMode,
+                highlightMode: state.highlightMode,
+                focusView: state.focusView,
+                autoPlaySpeed: state.autoPlaySpeed || 2000,
+                customColors: JSON.parse(JSON.stringify(state.customColors))
+            };
+            
+            saveDatabaseToTransientCache();
+        }
+
+        function loadPreferencesFromMantra() {
+            const m = getSelectedMantra();
+            if (!m) return;
+            
+            if (m.preferences) {
+                state.fontFamily = m.preferences.fontFamily || "Cinzel";
+                state.fontSize = m.preferences.fontSize || 32;
+                state.japaTextStyle = m.preferences.japaTextStyle || "bold";
+                state.highlightColorMode = m.preferences.highlightColorMode || "single";
+                state.themeMode = m.preferences.themeMode || "dark";
+                state.highlightMode = m.preferences.highlightMode || "phrase";
+                state.focusView = m.preferences.focusView || "all";
+                state.autoPlaySpeed = m.preferences.autoPlaySpeed || 2000;
+                state.customColors = m.preferences.customColors || {
+                    bg: "#0c0f1d",
+                    dim: "#374151",
+                    active: "#60a5fa",
+                    wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"]
+                };
+                if (!state.customColors.wordColors) {
+                    state.customColors.wordColors = ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                }
+            } else {
+                // Initialize default
+                m.preferences = {
+                    fontFamily: state.fontFamily,
+                    fontSize: state.fontSize,
+                    japaTextStyle: state.japaTextStyle,
+                    highlightColorMode: state.highlightColorMode,
+                    themeMode: state.themeMode,
+                    highlightMode: state.highlightMode,
+                    focusView: state.focusView,
+                    autoPlaySpeed: state.autoPlaySpeed || 2000,
+                    customColors: JSON.parse(JSON.stringify(state.customColors))
+                };
+            }
+            
+            // Sync theme mode body class
+            const body = document.body;
+            if (state.themeMode === 'light') {
+                body.classList.add('light-mode');
+            } else {
+                body.classList.remove('light-mode');
+            }
+            
+            // Sync auto play speed select element if present
+            const autoSpeedSelect = document.getElementById('auto-play-speed');
+            if (autoSpeedSelect) autoSpeedSelect.value = state.autoPlaySpeed;
+
+            applyThemeConfigStyles();
+        }
+
         function loadSavedDatabase() {
             const localData = localStorage.getItem('__japa_sanctuary_db_backup');
             if (localData) {
@@ -585,9 +992,21 @@
                         state.focusView = parsed.focusView || "all";
                         state.fontFamily = parsed.fontFamily || "Cinzel";
                         state.fontSize = parsed.fontSize || 32;
+                        state.japaTextStyle = parsed.japaTextStyle || "bold";
+                        state.highlightColorMode = parsed.highlightColorMode || "single";
+                        state.themeMode = parsed.themeMode || "dark";
                         state.soundEnabled = parsed.soundEnabled !== undefined ? parsed.soundEnabled : true;
                         state.vibrateEnabled = parsed.vibrateEnabled !== undefined ? parsed.vibrateEnabled : true;
-                        state.customColors = parsed.customColors || { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                        
+                        state.customColors = parsed.customColors || { 
+                            bg: "#0c0f1d", 
+                            dim: "#374151", 
+                            active: "#60a5fa",
+                            wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"]
+                        };
+                        if (!state.customColors.wordColors) {
+                            state.customColors.wordColors = ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                        }
                         
                         if (state.mantras.length > 0) {
                             state.selectedMantraId = state.mantras[0].id;
@@ -653,7 +1072,19 @@
                 state.focusView = "all";
                 state.fontFamily = "Cinzel";
                 state.fontSize = 32;
-                state.customColors = { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                state.japaTextStyle = "bold";
+                state.highlightColorMode = "single";
+                state.themeMode = "dark";
+                state.customColors = { 
+                    bg: "#0c0f1d", 
+                    dim: "#374151", 
+                    active: "#60a5fa",
+                    wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"]
+                };
+                
+                // Clear body light-mode class
+                document.body.classList.remove('light-mode');
+                
                 saveDatabaseToTransientCache();
                 applyThemeConfigStyles();
                 populateMantraSelector();
@@ -675,6 +1106,9 @@
                 case 'Mukta': fontStack = "'Mukta', sans-serif"; break;
                 case 'Caveat': fontStack = "'Caveat', cursive"; break;
                 case 'Montserrat': fontStack = "'Montserrat', sans-serif"; break;
+                case 'Martel': fontStack = "'Martel', serif"; break;
+                case 'Rozha One': fontStack = "'Rozha One', serif"; break;
+                case 'Yatra One': fontStack = "'Yatra One', cursive"; break;
                 default: fontStack = "'Cinzel', serif";
             }
             
@@ -696,29 +1130,156 @@
             document.getElementById('font-scale-label').textContent = state.fontSize + "px";
             document.getElementById('sound-toggle').checked = state.soundEnabled;
             document.getElementById('vibrate-toggle').checked = state.vibrateEnabled;
+
+            // Sync text style dropdown
+            const textStyleSelector = document.getElementById('text-style-selector');
+            if (textStyleSelector) textStyleSelector.value = state.japaTextStyle || "bold";
+
+            updateThemeModeUI();
+            updateHighlightColorModeUI();
+
+            // Sync word color pickers
+            const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+            for (let i = 0; i < 5; i++) {
+                const picker = document.getElementById(`picker-word-${i}`);
+                if (picker) picker.value = wordColors[i];
+            }
+        }
+
+        function updateThemeModeUI() {
+            const darkBtn = document.getElementById('btn-theme-dark');
+            const lightBtn = document.getElementById('btn-theme-light');
+            if (!darkBtn || !lightBtn) return;
+            
+            if (state.themeMode === 'light') {
+                lightBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                darkBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+            } else {
+                darkBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                lightBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+            }
+        }
+
+        function setThemeMode(mode) {
+            state.themeMode = mode;
+            const body = document.body;
+            
+            if (mode === 'light') {
+                body.classList.add('light-mode');
+                if (state.customColors.bg === "#0c0f1d" && state.customColors.dim === "#374151" && state.customColors.active === "#60a5fa") {
+                    state.customColors.bg = "#ffffff";
+                    state.customColors.dim = "#9ca3af";
+                    state.customColors.active = "#d97706";
+                }
+            } else {
+                body.classList.remove('light-mode');
+                if (state.customColors.bg === "#ffffff" && state.customColors.dim === "#9ca3af" && state.customColors.active === "#d97706") {
+                    state.customColors.bg = "#0c0f1d";
+                    state.customColors.dim = "#374151";
+                    state.customColors.active = "#60a5fa";
+                }
+            }
+            
+            updateThemeModeUI();
+            applyThemeConfigStyles();
+            saveActivePreferencesToMantra();
+            renderAll();
+        }
+
+        function updateHighlightColorModeUI() {
+            const singleBtn = document.getElementById('btn-color-mode-single');
+            const multiBtn = document.getElementById('btn-color-mode-multi');
+            const singleContainer = document.getElementById('single-color-picker-container');
+            const multiContainer = document.getElementById('multi-color-pickers-container');
+            
+            if (!singleBtn || !multiBtn || !singleContainer || !multiContainer) return;
+            
+            if (state.highlightColorMode === 'multi') {
+                multiBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                singleBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                singleContainer.classList.add('hidden');
+                multiContainer.classList.remove('hidden');
+            } else {
+                singleBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                multiBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                singleContainer.classList.remove('hidden');
+                multiContainer.classList.add('hidden');
+            }
+        }
+
+        function setHighlightColorMode(mode) {
+            state.highlightColorMode = mode;
+            updateHighlightColorModeUI();
+            saveActivePreferencesToMantra();
+            renderAll();
+        }
+
+        function updateWordColor(index, color) {
+            if (!state.customColors.wordColors) {
+                state.customColors.wordColors = ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+            }
+            state.customColors.wordColors[index] = color;
+            saveActivePreferencesToMantra();
+            renderAll();
+        }
+
+        function setTextStyle(style) {
+            state.japaTextStyle = style;
+            saveActivePreferencesToMantra();
+            renderAll();
         }
 
         function applyPreset(presetName) {
+            const body = document.body;
             switch(presetName) {
                 case 'somnath':
-                    state.customColors = { bg: "#0c0f1d", dim: "#374151", active: "#60a5fa" };
+                    state.customColors = { 
+                        bg: "#0c0f1d", 
+                        dim: "#374151", 
+                        active: "#60a5fa",
+                        wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"] 
+                    };
                     state.fontFamily = "Cinzel";
+                    state.themeMode = "dark";
+                    body.classList.remove('light-mode');
                     break;
                 case 'saffron':
-                    state.customColors = { bg: "#1a0f00", dim: "#593c1a", active: "#ff9933" };
+                    state.customColors = { 
+                        bg: "#1a0f00", 
+                        dim: "#593c1a", 
+                        active: "#ff9933",
+                        wordColors: ["#ff9933", "#fbbf24", "#f97316", "#ef4444", "#f43f5e"]
+                    };
                     state.fontFamily = "Cinzel";
+                    state.themeMode = "dark";
+                    body.classList.remove('light-mode');
                     break;
                 case 'meadow':
-                    state.customColors = { bg: "#03140e", dim: "#1b4332", active: "#4ade80" };
+                    state.customColors = { 
+                        bg: "#03140e", 
+                        dim: "#1b4332", 
+                        active: "#4ade80",
+                        wordColors: ["#4ade80", "#34d399", "#059669", "#10b981", "#6ee7b7"]
+                    };
                     state.fontFamily = "Mukta";
+                    state.themeMode = "dark";
+                    body.classList.remove('light-mode');
                     break;
                 case 'sarawati':
-                    state.customColors = { bg: "#fafaf9", dim: "#a8a29e", active: "#d97706" };
+                    state.customColors = { 
+                        bg: "#fafaf9", 
+                        dim: "#a8a29e", 
+                        active: "#d97706",
+                        wordColors: ["#d97706", "#b45309", "#ca8a04", "#eab308", "#854d0e"]
+                    };
                     state.fontFamily = "Playfair Display";
+                    state.themeMode = "light";
+                    body.classList.add('light-mode');
                     break;
             }
+            updateThemeModeUI();
             applyThemeConfigStyles();
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
             renderAll();
             showToast(`Preset themed.`);
         }
@@ -728,14 +1289,14 @@
             state.customColors.dim = document.getElementById('picker-dim').value;
             state.customColors.active = document.getElementById('picker-active').value;
             applyThemeConfigStyles();
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
             renderAll();
         }
 
         function setFontFamily(font) {
             state.fontFamily = font;
             applyThemeConfigStyles();
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
             renderAll();
         }
 
@@ -746,18 +1307,20 @@
             if (textBox) {
                 textBox.style.fontSize = size + "px";
             }
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
         }
 
         function setFocusView(mode) {
             state.focusView = mode;
-            const buttons = ['all', 'hide-completed', 'active-only'];
+            const buttons = ['all', 'hide-completed', 'active-only', 'word-only'];
             buttons.forEach(b => {
                 const btn = document.getElementById(`focus-btn-${b}`);
-                if (b === mode) {
-                    btn.className = "px-3 py-1.5 rounded text-xs transition duration-150 font-bold bg-amber-600 text-white shadow-sm";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded text-xs transition duration-150 font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/40";
+                if (btn) {
+                    if (b === mode) {
+                        btn.className = "px-2.5 py-1 rounded text-xs transition duration-150 font-bold bg-amber-600 text-white shadow-sm";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded text-xs transition duration-150 font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/40";
+                    }
                 }
             });
 
@@ -767,12 +1330,12 @@
             } else if (mode === 'hide-completed') {
                 state.hidePreviousLines = true;
                 state.hideUpcomingLines = false;
-            } else if (mode === 'active-only') {
+            } else if (mode === 'active-only' || mode === 'word-only') {
                 state.hidePreviousLines = true;
                 state.hideUpcomingLines = true;
             }
 
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
             renderAll();
         }
 
@@ -792,7 +1355,7 @@
             }
 
             resetHighlightState();
-            saveDatabaseToTransientCache();
+            saveActivePreferencesToMantra();
         }
 
         function toggleSound(enabled) {
@@ -809,9 +1372,100 @@
             const modal = document.getElementById('settings-modal');
             if (show) {
                 modal.classList.remove('hidden');
+                renderWordPainterPreview();
             } else {
                 modal.classList.add('hidden');
             }
+        }
+
+        let statePaintColor = 'default';
+
+        function selectPaintColor(color) {
+            statePaintColor = color;
+            const swatches = ['default', 0, 1, 2, 3, 4];
+            swatches.forEach(s => {
+                const btn = document.getElementById(`swatch-${s}`);
+                if (btn) {
+                    if (s === color) {
+                        btn.style.borderColor = '#d97706';
+                    } else {
+                        btn.style.borderColor = 'transparent';
+                    }
+                }
+            });
+        }
+
+        function paintWordColor(pIdx, lineIdx, wordIdx) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            if (!m.wordColorMap) m.wordColorMap = {};
+            
+            const key = `${pIdx}-${lineIdx}-${wordIdx}`;
+            
+            if (statePaintColor === 'default') {
+                delete m.wordColorMap[key];
+            } else {
+                const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                m.wordColorMap[key] = wordColors[statePaintColor];
+            }
+            
+            saveActivePreferencesToMantra();
+            renderWordPainterPreview();
+            renderAll();
+        }
+
+        function clearWordColorMap() {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.wordColorMap = {};
+            saveActivePreferencesToMantra();
+            renderWordPainterPreview();
+            renderAll();
+            showToast("Custom word colors cleared.");
+        }
+
+        function renderWordPainterPreview() {
+            const container = document.getElementById('word-painter-preview');
+            if (!container) return;
+            
+            const m = getSelectedMantra();
+            const parsed = parseSacredText(m.text);
+            container.innerHTML = '';
+            
+            if (!m.wordColorMap) m.wordColorMap = {};
+            
+            parsed.forEach((paragraph, pIdx) => {
+                const pDiv = document.createElement('div');
+                pDiv.className = 'w-full flex flex-col gap-1 items-center mb-3 last:mb-0 border-b border-gray-800/10 pb-2 last:border-b-0';
+                
+                paragraph.forEach((lineWords, lineIdx) => {
+                    const lineSpan = document.createElement('div');
+                    lineSpan.className = 'w-full flex flex-wrap gap-1.5 justify-center mb-1';
+                    
+                    lineWords.forEach((word, wordIdx) => {
+                        const wordBtn = document.createElement('button');
+                        wordBtn.className = 'px-1.5 py-0.5 rounded text-xs border border-gray-800 hover:border-amber-500 font-serif transition';
+                        wordBtn.textContent = word;
+                        
+                        const key = `${pIdx}-${lineIdx}-${wordIdx}`;
+                        if (m.wordColorMap[key]) {
+                            wordBtn.style.color = m.wordColorMap[key];
+                            wordBtn.style.borderColor = m.wordColorMap[key];
+                            wordBtn.style.backgroundColor = m.wordColorMap[key] + '15';
+                        } else {
+                            wordBtn.style.color = 'var(--japa-dim)';
+                        }
+                        
+                        wordBtn.onclick = (e) => {
+                            e.preventDefault();
+                            paintWordColor(pIdx, lineIdx, wordIdx);
+                        };
+                        lineSpan.appendChild(wordBtn);
+                    });
+                    pDiv.appendChild(lineSpan);
+                });
+                container.appendChild(pDiv);
+            });
         }
 
         // ---------------------------------------------------------------------
@@ -986,6 +1640,43 @@
             showToast(`Jumped to Stanza ${state.activeParagraphIndex + 1}`);
         }
 
+        function pauseAutoPlay() {
+            if (state.autoPlayIntervalId) {
+                clearInterval(state.autoPlayIntervalId);
+                state.autoPlayIntervalId = null;
+                
+                const btn = document.getElementById('btn-auto-play');
+                if (btn) {
+                    btn.className = "px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-md shadow-emerald-900/10";
+                    btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Auto Chant`;
+                }
+            }
+        }
+
+        function toggleAutoPlay() {
+            const btn = document.getElementById('btn-auto-play');
+            if (!btn) return;
+            
+            if (state.autoPlayIntervalId) {
+                pauseAutoPlay();
+                showToast("Auto play paused.");
+            } else {
+                state.autoPlayIntervalId = setInterval(handleStepForward, state.autoPlaySpeed);
+                btn.className = "px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-md shadow-rose-900/10";
+                btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause Auto`;
+                showToast("Auto play started.");
+            }
+        }
+
+        function changeAutoPlaySpeed(speed) {
+            state.autoPlaySpeed = parseInt(speed);
+            saveActivePreferencesToMantra();
+            if (state.autoPlayIntervalId) {
+                clearInterval(state.autoPlayIntervalId);
+                state.autoPlayIntervalId = setInterval(handleStepForward, state.autoPlaySpeed);
+            }
+        }
+
         // ---------------------------------------------------------------------
         // Sound and Tactile Feedback (Native Web Audio API Synthesis)
         // ---------------------------------------------------------------------
@@ -1072,6 +1763,7 @@
         // Views & Render Engine
         // ---------------------------------------------------------------------
         function switchTab(tabId) {
+            pauseAutoPlay();
             state.currentTab = tabId;
             
             const tabs = ['japa', 'library', 'data'];
@@ -1106,7 +1798,9 @@
         }
 
         function selectMantra(id) {
+            pauseAutoPlay();
             state.selectedMantraId = id;
+            loadPreferencesFromMantra();
             resetHighlightState();
             saveDatabaseToTransientCache();
             renderAll();
@@ -1257,14 +1951,19 @@
                         fsLineDiv.className = 'w-full flex flex-wrap justify-center gap-x-6 transition-all duration-300';
                     }
 
-                    // Compute precise line state (Previous, Active, Upcoming)
-                    const isPreviousLine = (pIdx < state.activeParagraphIndex) || 
-                                           (pIdx === state.activeParagraphIndex && lineIdx < state.activeLineIndex);
+                    // Compute precise line state (Previous, Active, Upcoming) with type-safe numeric casting
+                    const activeParaIdx = Number(state.activeParagraphIndex);
+                    const activeLineIdx = Number(state.activeLineIndex);
+                    const pIdxNum = Number(pIdx);
+                    const lineIdxNum = Number(lineIdx);
+
+                    const isPreviousLine = (pIdxNum < activeParaIdx) || 
+                                           (pIdxNum === activeParaIdx && lineIdxNum < activeLineIdx);
                     
-                    const isUpcomingLine = (pIdx > state.activeParagraphIndex) || 
-                                           (pIdx === state.activeParagraphIndex && lineIdx > state.activeLineIndex);
+                    const isUpcomingLine = (pIdxNum > activeParaIdx) || 
+                                           (pIdxNum === activeParaIdx && lineIdxNum > activeLineIdx);
                     
-                    const isActiveLine = (pIdx === state.activeParagraphIndex && lineIdx === state.activeLineIndex);
+                    const isActiveLine = (pIdxNum === activeParaIdx && lineIdxNum === activeLineIdx);
 
                     // Check Focus View modifiers to see if this line is rendered
                     let isVisible = true;
@@ -1289,14 +1988,31 @@
 
                         // Generate highlights for individual words
                         lineWords.forEach((word, wordIdx) => {
+                            // Check if word should be visible in 'word-only' focus view
+                            let isWordVisible = true;
+                            if (state.focusView === 'word-only') {
+                                if (isActiveLine) {
+                                    if (state.activeWordIndex === -1) {
+                                        // Show first word as a starting helper
+                                        isWordVisible = (wordIdx === 0);
+                                    } else {
+                                        isWordVisible = (wordIdx === state.activeWordIndex);
+                                    }
+                                } else {
+                                    isWordVisible = false;
+                                }
+                            }
+
+                            if (!isWordVisible) return;
+
                             const span = document.createElement('span');
-                            span.className = 'transition-all duration-300 transform rounded px-1';
+                            span.className = 'japa-word rounded px-1';
                             span.textContent = word;
 
                             let fsSpan;
                             if (fsDisplayBox) {
                                 fsSpan = document.createElement('span');
-                                fsSpan.className = 'transition-all duration-300 transform rounded px-2';
+                                fsSpan.className = 'japa-word rounded px-2';
                                 fsSpan.textContent = word;
                             }
 
@@ -1316,24 +2032,65 @@
                             }
 
                             if (isHighlighted) {
-                                span.style.color = 'var(--japa-active)';
-                                span.style.textShadow = '0 0 15px var(--japa-active)';
-                                span.style.fontWeight = 'bold';
+                                // Determine active color
+                                const key = `${pIdx}-${lineIdx}-${wordIdx}`;
+                                let activeColor = 'var(--japa-active)';
+                                if (item.wordColorMap && item.wordColorMap[key]) {
+                                    activeColor = item.wordColorMap[key];
+                                } else if (state.highlightColorMode === 'multi') {
+                                    const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                                    activeColor = wordColors[wordIdx % wordColors.length];
+                                }
+                                
+                                span.style.color = activeColor;
+                                span.style.textShadow = '0 0 15px ' + activeColor;
+                                
+                                // Apply text styles (Bold, Italics, Regular)
+                                if (state.japaTextStyle === 'italic') {
+                                    span.style.fontStyle = 'italic';
+                                    span.style.fontWeight = 'normal';
+                                } else if (state.japaTextStyle === 'normal') {
+                                    span.style.fontStyle = 'normal';
+                                    span.style.fontWeight = 'normal';
+                                } else { // bold (default)
+                                    span.style.fontStyle = 'normal';
+                                    span.style.fontWeight = 'bold';
+                                }
+                                
                                 if (state.highlightMode === 'phrase' && isActiveLine && wordIdx === state.activeWordIndex) {
-                                    span.style.transform = 'scale(1.1)';
+                                    span.classList.add('japa-active-word');
+                                    span.style.transform = 'scale(1.0)';
                                 }
 
                                 if (fsSpan) {
-                                    fsSpan.style.color = 'var(--japa-active)';
-                                    fsSpan.style.textShadow = '0 0 25px var(--japa-active)';
-                                    fsSpan.style.fontWeight = 'bold';
+                                    fsSpan.style.color = activeColor;
+                                    fsSpan.style.textShadow = '0 0 25px ' + activeColor;
+                                    
+                                    if (state.japaTextStyle === 'italic') {
+                                        fsSpan.style.fontStyle = 'italic';
+                                        fsSpan.style.fontWeight = 'normal';
+                                    } else if (state.japaTextStyle === 'normal') {
+                                        fsSpan.style.fontStyle = 'normal';
+                                        fsSpan.style.fontWeight = 'normal';
+                                    } else {
+                                        fsSpan.style.fontStyle = 'normal';
+                                        fsSpan.style.fontWeight = 'bold';
+                                    }
+                                    
                                     if (state.highlightMode === 'phrase' && isActiveLine && wordIdx === state.activeWordIndex) {
-                                        fsSpan.style.transform = 'scale(1.15)';
+                                        fsSpan.classList.add('japa-active-word');
+                                        fsSpan.style.transform = 'scale(1.0)';
                                     }
                                 }
                             } else {
                                 span.style.color = 'var(--japa-dim)';
-                                if (fsSpan) fsSpan.style.color = 'var(--japa-dim)';
+                                span.style.fontStyle = 'normal';
+                                span.style.fontWeight = 'normal';
+                                if (fsSpan) {
+                                    fsSpan.style.color = 'var(--japa-dim)';
+                                    fsSpan.style.fontStyle = 'normal';
+                                    fsSpan.style.fontWeight = 'normal';
+                                }
                             }
 
                             lineDiv.appendChild(span);
@@ -1374,6 +2131,22 @@
             const lineIndicator = document.getElementById('active-line-indicator');
             const totalLinesInPara = parsed[state.activeParagraphIndex] ? parsed[state.activeParagraphIndex].length : 1;
             lineIndicator.textContent = `Stanza ${state.activeParagraphIndex + 1} • Line ${state.activeLineIndex + 1} of ${totalLinesInPara}`;
+
+            // Smoothly animate the active word zoom scale using double requestAnimationFrame (for DOM paint cycle)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const activeWord = displayBox.querySelector('.japa-active-word');
+                    if (activeWord) {
+                        activeWord.style.transform = 'scale(1.12)';
+                    }
+                    if (fsDisplayBox) {
+                        const fsActiveWord = fsDisplayBox.querySelector('.japa-active-word');
+                        if (fsActiveWord) {
+                            fsActiveWord.style.transform = 'scale(1.18)';
+                        }
+                    }
+                });
+            });
         }
 
         function renderLibrary() {
@@ -1423,7 +2196,8 @@
                     actions.className = 'flex gap-2 w-full md:w-auto justify-end';
                     actions.innerHTML = `
                         <button onclick="quickSelectForJapa('${m.id}')" class="text-xs bg-amber-600 hover:bg-amber-500 text-white px-2.5 py-1 rounded transition">Load</button>
-                        <button onclick="resetMantraChants('${m.id}')" class="text-xs border border-gray-800 text-gray-400 hover:text-gray-200 px-2.5 py-1 rounded transition">Reset</button>
+                        <button onclick="editMantra('${m.id}')" class="text-xs border border-gray-800 text-gray-400 hover:text-gray-200 px-2.5 py-1 rounded transition">Edit</button>
+                        <button onclick="resetMantraChants('${m.id}')" class="text-xs border border-gray-800/80 text-gray-500 hover:text-gray-300 px-2.5 py-1 rounded transition">Reset</button>
                         <button onclick="deleteMantra('${m.id}')" class="text-xs border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-950/30 px-2.5 py-1 rounded transition">Delete</button>
                     `;
                     card.appendChild(actions);
@@ -1465,27 +2239,75 @@
                 return;
             }
 
-            const newComposition = {
-                id: `sacred-${Date.now()}`,
-                deity: deityInput,
-                title: titleInput,
-                text: textInput,
-                type: state.formType,
-                chants: 0
-            };
+            if (state.editingMantraId) {
+                const m = state.mantras.find(x => x.id === state.editingMantraId);
+                if (m) {
+                    m.deity = deityInput;
+                    m.title = titleInput;
+                    m.text = textInput;
+                    m.type = state.formType;
+                    m.wordColorMap = {}; // Reset custom word coloring mapping on edit
+                }
+                cancelEditMantra();
+                saveDatabaseToTransientCache();
+                populateMantraSelector();
+                resetHighlightState();
+                renderAll();
+                showToast(`Updated "${titleInput}"!`);
+            } else {
+                const newComposition = {
+                    id: `sacred-${Date.now()}`,
+                    deity: deityInput,
+                    title: titleInput,
+                    text: textInput,
+                    type: state.formType,
+                    chants: 0,
+                    wordColorMap: {},
+                    preferences: null
+                };
 
-            state.mantras.push(newComposition);
-            state.selectedMantraId = newComposition.id;
+                state.mantras.push(newComposition);
+                state.selectedMantraId = newComposition.id;
+                
+                document.getElementById('input-deity').value = '';
+                document.getElementById('input-title').value = '';
+                document.getElementById('input-text').value = '';
+
+                saveDatabaseToTransientCache();
+                populateMantraSelector();
+                resetHighlightState();
+                renderAll();
+                showToast(`Added "${titleInput}" to Treasury!`);
+            }
+        }
+
+        function editMantra(id) {
+            const m = state.mantras.find(x => x.id === id);
+            if (!m) return;
+            
+            state.editingMantraId = id;
+            
+            document.getElementById('input-deity').value = m.deity;
+            document.getElementById('input-title').value = m.title;
+            document.getElementById('input-text').value = m.text;
+            setFormType(m.type);
+            
+            document.getElementById('btn-save-mantra').textContent = "Update Composition";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+            
+            document.getElementById('input-deity').focus();
+            showToast(`Editing "${m.title}"`);
+        }
+
+        function cancelEditMantra() {
+            state.editingMantraId = null;
             
             document.getElementById('input-deity').value = '';
             document.getElementById('input-title').value = '';
             document.getElementById('input-text').value = '';
-
-            saveDatabaseToTransientCache();
-            populateMantraSelector();
-            resetHighlightState();
-            renderAll();
-            showToast(`Added "${titleInput}" to Treasury!`);
+            
+            document.getElementById('btn-save-mantra').textContent = "Commit to Treasury";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
         }
 
         function quickSelectForJapa(id) {
