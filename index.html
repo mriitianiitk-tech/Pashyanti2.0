@@ -384,7 +384,7 @@
                 </div>
 
                 <!-- Central Sacred Mantra Box -->
-                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar" style="font-family: var(--japa-font); font-size: 32px;">
+                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-8" style="font-family: var(--japa-font); font-size: 32px;">
                     <!-- Mantra/Stotra tokens loaded dynamically -->
                 </div>
 
@@ -412,14 +412,10 @@
                         Auto Chant
                     </button>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-400 font-mono">Speed:</span>
-                    <select id="auto-play-speed" onchange="changeAutoPlaySpeed(this.value)" class="bg-gray-900 border border-gray-800 text-gray-200 text-xs rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                        <option value="3000">Slow (3s)</option>
-                        <option value="2000" selected>Medium (2s)</option>
-                        <option value="1000">Fast (1s)</option>
-                        <option value="500">Very Fast (0.5s)</option>
-                    </select>
+                <div class="flex items-center gap-3 bg-gray-900/60 px-3 py-1.5 rounded-lg border border-gray-800/80">
+                    <span class="text-xs text-gray-400 font-mono">Chant Interval:</span>
+                    <input type="range" id="auto-play-speed" min="100" max="5000" step="50" value="2000" oninput="changeAutoPlaySpeed(this.value)" class="w-32 accent-amber-500 bg-gray-950 rounded-lg cursor-pointer h-1.5 focus:outline-none">
+                    <span id="auto-play-speed-label" class="text-xs text-amber-500 font-mono font-bold w-12 text-right">2.00s</span>
                 </div>
             </div>
 
@@ -785,7 +781,7 @@
         <div class="flex-1 flex flex-col justify-center items-center relative overflow-hidden my-6">
             <div id="fs-sparkles-container" class="absolute inset-0 pointer-events-none"></div>
             <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant"></div>
-            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar" style="font-family: var(--japa-font); font-size: 42px;">
+            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-10" style="font-family: var(--japa-font); font-size: 42px;">
                 <!-- Highlight synced content -->
             </div>
         </div>
@@ -976,7 +972,13 @@
             
             // Sync auto play speed select element if present
             const autoSpeedSelect = document.getElementById('auto-play-speed');
-            if (autoSpeedSelect) autoSpeedSelect.value = state.autoPlaySpeed;
+            if (autoSpeedSelect) {
+                autoSpeedSelect.value = state.autoPlaySpeed;
+                const label = document.getElementById('auto-play-speed-label');
+                if (label) {
+                    label.textContent = (state.autoPlaySpeed / 1000).toFixed(2) + 's';
+                }
+            }
 
             applyThemeConfigStyles();
         }
@@ -1670,6 +1672,10 @@
 
         function changeAutoPlaySpeed(speed) {
             state.autoPlaySpeed = parseInt(speed);
+            const label = document.getElementById('auto-play-speed-label');
+            if (label) {
+                label.textContent = (state.autoPlaySpeed / 1000).toFixed(2) + 's';
+            }
             saveActivePreferencesToMantra();
             if (state.autoPlayIntervalId) {
                 clearInterval(state.autoPlayIntervalId);
@@ -1943,12 +1949,12 @@
 
                 paragraph.forEach((lineWords, lineIdx) => {
                     const lineDiv = document.createElement('div');
-                    lineDiv.className = 'w-full flex flex-wrap justify-center gap-x-4 transition-all duration-300';
+                    lineDiv.className = 'w-full flex flex-wrap justify-center gap-x-4 transition-all duration-300 py-2';
                     
                     let fsLineDiv;
                     if (fsDisplayBox) {
                         fsLineDiv = document.createElement('div');
-                        fsLineDiv.className = 'w-full flex flex-wrap justify-center gap-x-6 transition-all duration-300';
+                        fsLineDiv.className = 'w-full flex flex-wrap justify-center gap-x-6 transition-all duration-300 py-3';
                     }
 
                     // Compute precise line state (Previous, Active, Upcoming) with type-safe numeric casting
