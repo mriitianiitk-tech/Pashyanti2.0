@@ -748,6 +748,28 @@
                         <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
                     </label>
                 </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Flying "Om" Animation</span>
+                        <span class="text-[10px] text-gray-500">Flies over on completing each full mantra/stotra cycle.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="animation-toggle" onchange="toggleAnimation(this.checked)" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Completion Toast Notification</span>
+                        <span class="text-[10px] text-gray-500">Shows bottom-right text popup on completing each cycle.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="completion-toast-toggle" onchange="toggleCompletionToast(this.checked)" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -864,6 +886,8 @@
             themeMode: "dark", // "dark", "light"
             soundEnabled: true,
             vibrateEnabled: true,
+            animationEnabled: true,
+            completionToastEnabled: true,
             currentTab: "japa",
             isFullscreen: false,
             formType: "mantra", // "mantra" or "stotra"
@@ -999,6 +1023,8 @@
                         state.themeMode = parsed.themeMode || "dark";
                         state.soundEnabled = parsed.soundEnabled !== undefined ? parsed.soundEnabled : true;
                         state.vibrateEnabled = parsed.vibrateEnabled !== undefined ? parsed.vibrateEnabled : true;
+                        state.animationEnabled = parsed.animationEnabled !== undefined ? parsed.animationEnabled : true;
+                        state.completionToastEnabled = parsed.completionToastEnabled !== undefined ? parsed.completionToastEnabled : true;
                         
                         state.customColors = parsed.customColors || { 
                             bg: "#0c0f1d", 
@@ -1077,6 +1103,10 @@
                 state.japaTextStyle = "bold";
                 state.highlightColorMode = "single";
                 state.themeMode = "dark";
+                state.soundEnabled = true;
+                state.vibrateEnabled = true;
+                state.animationEnabled = true;
+                state.completionToastEnabled = true;
                 state.customColors = { 
                     bg: "#0c0f1d", 
                     dim: "#374151", 
@@ -1132,6 +1162,8 @@
             document.getElementById('font-scale-label').textContent = state.fontSize + "px";
             document.getElementById('sound-toggle').checked = state.soundEnabled;
             document.getElementById('vibrate-toggle').checked = state.vibrateEnabled;
+            document.getElementById('animation-toggle').checked = state.animationEnabled;
+            document.getElementById('completion-toast-toggle').checked = state.completionToastEnabled;
 
             // Sync text style dropdown
             const textStyleSelector = document.getElementById('text-style-selector');
@@ -1367,6 +1399,16 @@
 
         function toggleVibrate(enabled) {
             state.vibrateEnabled = enabled;
+            saveDatabaseToTransientCache();
+        }
+
+        function toggleAnimation(enabled) {
+            state.animationEnabled = enabled;
+            saveDatabaseToTransientCache();
+        }
+
+        function toggleCompletionToast(enabled) {
+            state.completionToastEnabled = enabled;
             saveDatabaseToTransientCache();
         }
 
@@ -1734,6 +1776,7 @@
         }
 
         function triggerCompletionSparkles() {
+            if (!state.animationEnabled) return;
             const containerId = state.isFullscreen ? 'fs-sparkles-container' : 'sparkles-container';
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -1761,8 +1804,10 @@
             triggerVibration([100, 50, 100]);
             triggerCompletionSparkles();
             
-            const messageType = item.type === 'stotra' ? 'recitation' : 'chant round';
-            showToast(`Completed ${messageType}! Total: ${item.chants}`);
+            if (state.completionToastEnabled) {
+                const messageType = item.type === 'stotra' ? 'recitation' : 'chant round';
+                showToast(`Completed ${messageType}! Total: ${item.chants}`);
+            }
         }
 
         // ---------------------------------------------------------------------
