@@ -260,6 +260,18 @@
             background-color: rgba(255, 255, 255, 0.6) !important;
             border-color: rgba(229, 231, 235, 0.8) !important;
         }
+        
+        /* Deity Background Image Overlay styles */
+        .japa-background-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: 0;
+            transition: opacity 0.3s ease, background-position 0.1s ease, transform 0.1s ease;
+            transform-origin: center center;
+        }
     </style>
 </head>
 <body class="bg-[#0c0f1d] text-gray-200 min-h-screen flex flex-col transition-all-custom select-none">
@@ -374,32 +386,47 @@
             <!-- Main Meditative Chanting Space -->
             <div id="japa-display-container" class="relative rounded-2xl p-6 md:p-14 flex flex-col justify-center items-center shadow-2xl transition-all-custom border border-gray-800/40 overflow-hidden min-h-[480px] text-center" style="background-color: var(--japa-bg);">
                 
-                <!-- Floating sparks system container -->
-                <div id="sparkles-container" class="absolute inset-0 pointer-events-none"></div>
-
-                <!-- Current Line Indicator -->
-                <div class="absolute top-4 left-4 right-4 flex justify-between items-center opacity-60 text-xs tracking-widest uppercase font-mono">
-                    <span id="highlight-mode-badge" class="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px]">Phrase Mode</span>
-                    <span id="active-line-indicator">Line 1 of 1</span>
-                </div>
-
-                <!-- Central Sacred Mantra Box -->
-                <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-8" style="font-family: var(--japa-font); font-size: 32px;">
-                    <!-- Mantra/Stotra tokens loaded dynamically -->
-                </div>
-
-                <!-- Touch Action Area overlay (makes mobile chanting effortless) -->
-                <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant forward"></div>
-
-                <!-- Progress Bar inside screen -->
-                <div class="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-center gap-1.5 pointer-events-none">
-                    <div id="stotra-progress-wrapper" class="w-1/2 bg-gray-800/80 h-1.5 rounded-full overflow-hidden hidden border border-white/5">
-                        <div id="stotra-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                <!-- Background Image Overlay (Behind everything for Background Mode) -->
+                <div id="japa-bg-image" class="japa-background-overlay"></div>
+                
+                <!-- Layout Split Wrapper -->
+                <div id="japa-split-wrapper" class="w-full h-full flex flex-col md:flex-row items-stretch justify-between relative z-10 gap-6">
+                    
+                    <!-- Side Portrait Image (Hidden in Background Mode) -->
+                    <div id="japa-side-image-panel" class="hidden w-full md:w-1/3 rounded-xl overflow-hidden relative min-h-[250px] md:min-h-0 border border-gray-800/40 bg-black/20">
+                        <div id="japa-side-image" class="japa-background-overlay"></div>
                     </div>
-                    <span id="stotra-progress-label" class="text-[10px] uppercase font-mono tracking-wider opacity-60 hidden">Paragraph 1 of 1 (0%)</span>
-                    <!-- Keyboard Shortcut / Help Tip -->
-                    <div class="opacity-40 text-[11px] tracking-wide font-mono hidden md:block">
-                        Tip: <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Right Arrow</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Space</kbd> steps forward. <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Left Arrow</kbd> steps backward.
+                    
+                    <!-- Japa Content Area -->
+                    <div id="japa-content-panel" class="flex-1 flex flex-col justify-center items-center relative min-h-[380px] w-full">
+                        <!-- Floating sparks system container -->
+                        <div id="sparkles-container" class="absolute inset-0 pointer-events-none z-10"></div>
+
+                        <!-- Current Line Indicator -->
+                        <div class="absolute top-4 left-4 right-4 flex justify-between items-center opacity-60 text-xs tracking-widest uppercase font-mono z-10">
+                            <span id="highlight-mode-badge" class="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px]">Phrase Mode</span>
+                            <span id="active-line-indicator">Line 1 of 1</span>
+                        </div>
+
+                        <!-- Central Sacred Mantra Box -->
+                        <div id="mantra-text-box" class="w-full flex flex-col justify-center items-center gap-6 leading-relaxed select-none transition-all duration-300 max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-8 relative z-10" style="font-family: var(--japa-font); font-size: 32px;">
+                            <!-- Mantra/Stotra tokens loaded dynamically -->
+                        </div>
+
+                        <!-- Touch Action Area overlay (makes mobile chanting effortless) -->
+                        <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-20" title="Tap to chant forward"></div>
+
+                        <!-- Progress Bar inside screen -->
+                        <div class="absolute bottom-4 left-4 right-4 z-20 flex flex-col items-center gap-1.5 pointer-events-none">
+                            <div id="stotra-progress-wrapper" class="w-1/2 bg-gray-800/80 h-1.5 rounded-full overflow-hidden hidden border border-white/5">
+                                <div id="stotra-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <span id="stotra-progress-label" class="text-[10px] uppercase font-mono tracking-wider opacity-60 hidden">Paragraph 1 of 1 (0%)</span>
+                            <!-- Keyboard Shortcut / Help Tip -->
+                            <div class="opacity-40 text-[11px] tracking-wide font-mono hidden md:block">
+                                Tip: <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Right Arrow</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Space</kbd> steps forward. <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold">Left Arrow</kbd> steps backward.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -725,6 +752,71 @@
                 </div>
             </div>
 
+            <!-- Deity Background Image Section -->
+            <div class="space-y-4 border-t border-gray-800/80 pt-4">
+                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Deity Background Image</label>
+                <p class="text-[10px] text-gray-500 leading-normal">
+                    Set a background image specifically for this mantra/stotra.
+                </p>
+                
+                <!-- URL input and file picker -->
+                <div class="space-y-2">
+                    <div class="flex gap-2">
+                        <input type="text" id="bg-image-url" placeholder="Paste Image URL..." onchange="updateMantraBgImageUrl(this.value)" class="flex-1 bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                        <button onclick="clearMantraBgImage()" class="px-2.5 py-2 bg-rose-950/20 border border-rose-900/40 text-rose-400 text-xs font-semibold rounded-lg hover:bg-rose-950/40 transition">
+                            Clear
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between bg-black/20 p-2 rounded border border-gray-800/60">
+                        <span class="text-[10px] text-gray-400 font-medium">Or upload local image:</span>
+                        <label class="cursor-pointer bg-amber-600/10 hover:bg-amber-650/20 border border-amber-500/40 text-amber-500 text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition">
+                            Choose File
+                            <input type="file" id="bg-image-file" accept="image/*" onchange="uploadMantraBgImage(event)" class="hidden">
+                        </label>
+                    </div>
+                    <p class="text-[9px] text-gray-500 leading-normal italic">
+                        Tip: Pasting web image URLs preserves storage. Uploading local images is limited by browser local storage size limits.
+                    </p>
+                </div>
+
+                <!-- Deity Image Layout Selector -->
+                <div class="space-y-1.5">
+                    <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Image Position Layout</label>
+                    <select id="bg-layout-selector" onchange="updateMantraBgLayout(this.value)" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                        <option value="background">Background Overlay (Behind Text)</option>
+                        <option value="left">Left Side Panel (Split Screen)</option>
+                        <option value="right">Right Side Panel (Split Screen)</option>
+                    </select>
+                </div>
+
+                <!-- Customizations sliders: Opacity, Zoom/Scale, Position Y -->
+                <div id="bg-controls-container" class="space-y-3 bg-black/10 p-3 rounded-lg border border-gray-800/40">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-gray-400 font-semibold">Image Opacity (Vary Transparency)</span>
+                            <span id="bg-opacity-label" class="text-[10px] font-mono text-amber-500">0.3</span>
+                        </div>
+                        <input type="range" id="bg-opacity-slider" min="0" max="1" step="0.05" value="0.3" oninput="updateMantraBgOpacity(this.value)" class="w-full h-1 bg-gray-950 rounded accent-amber-500 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-gray-400 font-semibold">Vertical Alignment (Up/Down)</span>
+                            <span id="bg-position-y-label" class="text-[10px] font-mono text-amber-500">50%</span>
+                        </div>
+                        <input type="range" id="bg-position-y-slider" min="0" max="100" step="1" value="50" oninput="updateMantraBgPositionY(this.value)" class="w-full h-1 bg-gray-950 rounded accent-amber-500 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] text-gray-400 font-semibold">Crop Zoom (Scale)</span>
+                            <span id="bg-scale-label" class="text-[10px] font-mono text-amber-500">1.0x</span>
+                        </div>
+                        <input type="range" id="bg-scale-slider" min="1" max="3" step="0.05" value="1.0" oninput="updateMantraBgScale(this.value)" class="w-full h-1 bg-gray-950 rounded accent-amber-500 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
             <!-- Feedback Adjustments -->
             <div class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div class="flex items-center justify-between">
@@ -781,9 +873,13 @@
     </div>
 
     <!-- Distraction-Free Fullscreen Overlay -->
-    <div id="fullscreen-overlay" class="fixed inset-0 z-[150] hidden flex flex-col justify-between p-6 transition-all-custom" style="background-color: var(--japa-bg);">
+    <div id="fullscreen-overlay" class="fixed inset-0 z-[150] hidden flex flex-col justify-between p-6 transition-all-custom overflow-hidden" style="background-color: var(--japa-bg);">
+        
+        <!-- Background Image Overlay -->
+        <div id="fs-bg-image" class="japa-background-overlay"></div>
+        
         <!-- Top Subtle Bar -->
-        <div class="flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity duration-300">
+        <div class="flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity duration-300 relative z-10">
             <div class="text-left font-serif">
                 <h4 id="fs-mantra-title" class="text-sm font-semibold tracking-wider text-amber-500">Panchadashi Mantra</h4>
                 <p id="fs-deity" class="text-[10px] text-gray-400">Maa Tripurasundari</p>
@@ -799,17 +895,26 @@
             </div>
         </div>
 
-        <!-- Huge Central Chanting Area -->
-        <div class="flex-1 flex flex-col justify-center items-center relative overflow-hidden my-6">
-            <div id="fs-sparkles-container" class="absolute inset-0 pointer-events-none"></div>
-            <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-10" title="Tap to chant"></div>
-            <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-10" style="font-family: var(--japa-font); font-size: 42px;">
-                <!-- Highlight synced content -->
+        <!-- Huge Central split wrapper -->
+        <div id="fs-split-wrapper" class="flex-1 flex flex-col md:flex-row items-stretch justify-between my-6 relative z-10 gap-8 overflow-hidden">
+            
+            <!-- Fullscreen Side Image Panel -->
+            <div id="fs-side-image-panel" class="hidden w-full md:w-1/3 rounded-2xl overflow-hidden relative min-h-[300px] md:min-h-0 border border-white/5 bg-black/20">
+                <div id="fs-side-image" class="japa-background-overlay"></div>
+            </div>
+
+            <!-- Fullscreen Content Area -->
+            <div id="fs-content-panel" class="flex-1 flex flex-col justify-center items-center relative overflow-hidden w-full">
+                <div id="fs-sparkles-container" class="absolute inset-0 pointer-events-none z-10"></div>
+                <div onclick="handleStepForward()" class="absolute inset-0 bg-transparent cursor-pointer z-20" title="Tap to chant"></div>
+                <div id="fs-mantra-text-box" class="w-full flex flex-col justify-center items-center gap-8 leading-relaxed select-none transition-all duration-300 text-center max-h-[60vh] overflow-y-auto overflow-x-hidden no-scrollbar py-10 relative z-10" style="font-family: var(--japa-font); font-size: 42px;">
+                    <!-- Highlight synced content -->
+                </div>
             </div>
         </div>
 
         <!-- Bottom progress area inside Fullscreen focus mode -->
-        <div class="flex flex-col items-center gap-3">
+        <div class="flex flex-col items-center gap-3 relative z-10">
             <div id="fs-stotra-progress-wrapper" class="w-1/3 bg-white/10 h-1.5 rounded-full overflow-hidden hidden border border-white/5">
                 <div id="fs-stotra-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
@@ -1005,6 +1110,11 @@
             }
 
             applyThemeConfigStyles();
+
+            const modal = document.getElementById('settings-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                syncBgImageControls();
+            }
         }
 
         function loadSavedDatabase() {
@@ -1412,11 +1522,212 @@
             saveDatabaseToTransientCache();
         }
 
+        function applyBackgroundStyles(m) {
+            const japaBg = document.getElementById('japa-bg-image');
+            const fsBg = document.getElementById('fs-bg-image');
+            
+            const japaSidePanel = document.getElementById('japa-side-image-panel');
+            const japaSideImg = document.getElementById('japa-side-image');
+            const japaWrapper = document.getElementById('japa-split-wrapper');
+            
+            const fsSidePanel = document.getElementById('fs-side-image-panel');
+            const fsSideImg = document.getElementById('fs-side-image');
+            const fsWrapper = document.getElementById('fs-split-wrapper');
+
+            if (!m) return;
+
+            const layout = m.bgLayout || 'background';
+            const hasImage = !!m.bgImage;
+
+            // Reset background overlays
+            if (japaBg) { japaBg.style.backgroundImage = 'none'; japaBg.style.opacity = 0; }
+            if (fsBg) { fsBg.style.backgroundImage = 'none'; fsBg.style.opacity = 0; }
+            
+            // Hide side panels by default
+            if (japaSidePanel) japaSidePanel.classList.add('hidden');
+            if (fsSidePanel) fsSidePanel.classList.add('hidden');
+            
+            // Reset wrapper flex classes
+            if (japaWrapper) {
+                japaWrapper.className = "w-full h-full flex flex-col md:flex-row items-stretch justify-between relative z-10 gap-6";
+            }
+            if (fsWrapper) {
+                fsWrapper.className = "flex-1 flex flex-col md:flex-row items-stretch justify-between my-6 relative z-10 gap-8 overflow-hidden";
+            }
+
+            if (hasImage) {
+                const opacity = m.bgOpacity !== undefined ? m.bgOpacity : 0.3;
+                const posY = m.bgPositionY !== undefined ? m.bgPositionY : 50;
+                const scale = m.bgScale !== undefined ? m.bgScale : 1.0;
+
+                if (layout === 'background') {
+                    // Apply to Full Screen background overlays
+                    [japaBg, fsBg].forEach(el => {
+                        if (el) {
+                            el.style.backgroundImage = `url(${m.bgImage})`;
+                            el.style.opacity = opacity;
+                            el.style.backgroundPosition = `center ${posY}%`;
+                            el.style.transform = `scale(${scale})`;
+                        }
+                    });
+                } else {
+                    // Split screen: left or right side panels
+                    const flexClass = layout === 'left' ? 
+                        "w-full h-full flex flex-col md:flex-row items-stretch relative z-10 gap-6" : 
+                        "w-full h-full flex flex-col-reverse md:flex-row-reverse items-stretch relative z-10 gap-6";
+                        
+                    const fsFlexClass = layout === 'left' ? 
+                        "flex-1 flex flex-col md:flex-row items-stretch my-6 relative z-10 gap-8 overflow-hidden" : 
+                        "flex-1 flex flex-col-reverse md:flex-row-reverse items-stretch my-6 relative z-10 gap-8 overflow-hidden";
+
+                    if (japaWrapper) japaWrapper.className = flexClass;
+                    if (fsWrapper) fsWrapper.className = fsFlexClass;
+
+                    // Show Japa side panel
+                    if (japaSidePanel && japaSideImg) {
+                        japaSidePanel.classList.remove('hidden');
+                        japaSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        japaSideImg.style.opacity = opacity;
+                        japaSideImg.style.backgroundPosition = `center ${posY}%`;
+                        japaSideImg.style.transform = `scale(${scale})`;
+                    }
+
+                    // Show FS side panel
+                    if (fsSidePanel && fsSideImg) {
+                        fsSidePanel.classList.remove('hidden');
+                        fsSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        fsSideImg.style.opacity = opacity;
+                        fsSideImg.style.backgroundPosition = `center ${posY}%`;
+                        fsSideImg.style.transform = `scale(${scale})`;
+                    }
+                }
+            }
+        }
+
+        function syncBgImageControls() {
+            const m = getSelectedMantra();
+            const urlInput = document.getElementById('bg-image-url');
+            const opacitySlider = document.getElementById('bg-opacity-slider');
+            const posYSlider = document.getElementById('bg-position-y-slider');
+            const scaleSlider = document.getElementById('bg-scale-slider');
+            const layoutSelector = document.getElementById('bg-layout-selector');
+            
+            const opacityLabel = document.getElementById('bg-opacity-label');
+            const posYLabel = document.getElementById('bg-position-y-label');
+            const scaleLabel = document.getElementById('bg-scale-label');
+
+            if (!m || !urlInput) return;
+
+            urlInput.value = (m.bgImage && !m.bgImage.startsWith('data:')) ? m.bgImage : '';
+            
+            const opacity = m.bgOpacity !== undefined ? m.bgOpacity : 0.3;
+            opacitySlider.value = opacity;
+            opacityLabel.textContent = opacity;
+
+            const posY = m.bgPositionY !== undefined ? m.bgPositionY : 50;
+            posYSlider.value = posY;
+            posYLabel.textContent = posY + '%';
+
+            const scale = m.bgScale !== undefined ? m.bgScale : 1.0;
+            scaleSlider.value = scale;
+            scaleLabel.textContent = scale.toFixed(2) + 'x';
+
+            if (layoutSelector) {
+                layoutSelector.value = m.bgLayout || 'background';
+            }
+
+            const controlsContainer = document.getElementById('bg-controls-container');
+            if (controlsContainer) {
+                if (m.bgImage) {
+                    controlsContainer.classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    controlsContainer.classList.add('opacity-50', 'pointer-events-none');
+                }
+            }
+        }
+
+        function updateMantraBgImageUrl(url) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgImage = url.trim();
+            saveDatabaseToTransientCache();
+            syncBgImageControls();
+            renderJapaScreen();
+        }
+
+        function updateMantraBgLayout(val) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgLayout = val;
+            saveDatabaseToTransientCache();
+            syncBgImageControls();
+            renderJapaScreen();
+        }
+
+        function clearMantraBgImage() {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgImage = '';
+            const fileInput = document.getElementById('bg-image-file');
+            if (fileInput) fileInput.value = '';
+            saveDatabaseToTransientCache();
+            syncBgImageControls();
+            renderJapaScreen();
+        }
+
+        function uploadMantraBgImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const m = getSelectedMantra();
+                if (!m) return;
+                m.bgImage = e.target.result;
+                saveDatabaseToTransientCache();
+                syncBgImageControls();
+                renderJapaScreen();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Sliders
+        function updateMantraBgOpacity(val) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgOpacity = parseFloat(val);
+            const opacityLabel = document.getElementById('bg-opacity-label');
+            if (opacityLabel) opacityLabel.textContent = val;
+            saveDatabaseToTransientCache();
+            renderJapaScreen();
+        }
+
+        function updateMantraBgPositionY(val) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgPositionY = parseInt(val);
+            const posYLabel = document.getElementById('bg-position-y-label');
+            if (posYLabel) posYLabel.textContent = val + '%';
+            saveDatabaseToTransientCache();
+            renderJapaScreen();
+        }
+
+        function updateMantraBgScale(val) {
+            const m = getSelectedMantra();
+            if (!m) return;
+            m.bgScale = parseFloat(val);
+            const scaleLabel = document.getElementById('bg-scale-label');
+            if (scaleLabel) scaleLabel.textContent = parseFloat(val).toFixed(2) + 'x';
+            saveDatabaseToTransientCache();
+            renderJapaScreen();
+        }
+
         function toggleSettingsModal(show) {
             const modal = document.getElementById('settings-modal');
             if (show) {
                 modal.classList.remove('hidden');
                 renderWordPainterPreview();
+                syncBgImageControls();
             } else {
                 modal.classList.add('hidden');
             }
@@ -1868,6 +2179,8 @@
         function renderJapaScreen() {
             const item = getSelectedMantra();
             const parsed = parseSacredText(item.text);
+
+            applyBackgroundStyles(item);
 
             // 1. Sync labels based on Mantra vs Stotra
             const japaCounterLabel = document.getElementById('japa-counter-label');
