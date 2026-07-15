@@ -786,6 +786,9 @@
                         <option value="background">Background Overlay (Behind Text)</option>
                         <option value="left">Left Side Panel (Split Screen)</option>
                         <option value="right">Right Side Panel (Split Screen)</option>
+                        <option value="center-overlay">Center Panel (Overlay Text)</option>
+                        <option value="center-top">Center Panel (Image on Top)</option>
+                        <option value="center-bottom">Center Panel (Image on Bottom)</option>
                     </select>
                 </div>
 
@@ -1529,10 +1532,12 @@
             const japaSidePanel = document.getElementById('japa-side-image-panel');
             const japaSideImg = document.getElementById('japa-side-image');
             const japaWrapper = document.getElementById('japa-split-wrapper');
+            const japaContentPanel = document.getElementById('japa-content-panel');
             
             const fsSidePanel = document.getElementById('fs-side-image-panel');
             const fsSideImg = document.getElementById('fs-side-image');
             const fsWrapper = document.getElementById('fs-split-wrapper');
+            const fsContentPanel = document.getElementById('fs-content-panel');
 
             if (!m) return;
 
@@ -1543,9 +1548,13 @@
             if (japaBg) { japaBg.style.backgroundImage = 'none'; japaBg.style.opacity = 0; }
             if (fsBg) { fsBg.style.backgroundImage = 'none'; fsBg.style.opacity = 0; }
             
-            // Hide side panels by default
-            if (japaSidePanel) japaSidePanel.classList.add('hidden');
-            if (fsSidePanel) fsSidePanel.classList.add('hidden');
+            // Reset side panels classes and hide by default
+            if (japaSidePanel) {
+                japaSidePanel.className = "w-full md:w-1/3 rounded-xl overflow-hidden relative min-h-[250px] md:min-h-0 border border-gray-800/40 bg-black/20 hidden";
+            }
+            if (fsSidePanel) {
+                fsSidePanel.className = "w-full md:w-1/3 rounded-2xl overflow-hidden relative min-h-[300px] md:min-h-0 border border-white/5 bg-black/20 hidden";
+            }
             
             // Reset wrapper flex classes
             if (japaWrapper) {
@@ -1553,6 +1562,14 @@
             }
             if (fsWrapper) {
                 fsWrapper.className = "flex-1 flex flex-col md:flex-row items-stretch justify-between my-6 relative z-10 gap-8 overflow-hidden";
+            }
+
+            // Reset content panels classes
+            if (japaContentPanel) {
+                japaContentPanel.className = "flex-1 flex flex-col justify-center items-center relative min-h-[380px] w-full";
+            }
+            if (fsContentPanel) {
+                fsContentPanel.className = "flex-1 flex flex-col justify-center items-center relative overflow-hidden w-full";
             }
 
             if (hasImage) {
@@ -1570,7 +1587,7 @@
                             el.style.transform = `scale(${scale})`;
                         }
                     });
-                } else {
+                } else if (layout === 'left' || layout === 'right') {
                     // Split screen: left or right side panels
                     const flexClass = layout === 'left' ? 
                         "w-full h-full flex flex-col md:flex-row items-stretch relative z-10 gap-6" : 
@@ -1595,6 +1612,85 @@
                     // Show FS side panel
                     if (fsSidePanel && fsSideImg) {
                         fsSidePanel.classList.remove('hidden');
+                        fsSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        fsSideImg.style.opacity = opacity;
+                        fsSideImg.style.backgroundPosition = `center ${posY}%`;
+                        fsSideImg.style.transform = `scale(${scale})`;
+                    }
+                } else if (layout === 'center-overlay') {
+                    // Center Panel (Overlay Text)
+                    if (japaWrapper) {
+                        japaWrapper.className = "w-full h-full flex flex-col justify-center items-center relative z-10";
+                    }
+                    if (fsWrapper) {
+                        fsWrapper.className = "flex-1 flex flex-col justify-center items-center my-6 relative z-10 overflow-hidden w-full h-full";
+                    }
+
+                    if (japaSidePanel && japaSideImg) {
+                        japaSidePanel.className = "absolute inset-0 md:inset-y-0 md:left-1/2 md:-translate-x-1/2 md:w-1/3 rounded-xl overflow-hidden border border-gray-800/40 bg-black/20 pointer-events-none z-0";
+                        japaSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        japaSideImg.style.opacity = opacity;
+                        japaSideImg.style.backgroundPosition = `center ${posY}%`;
+                        japaSideImg.style.transform = `scale(${scale})`;
+                    }
+
+                    if (fsSidePanel && fsSideImg) {
+                        fsSidePanel.className = "absolute inset-0 md:inset-y-0 md:left-1/2 md:-translate-x-1/2 md:w-1/3 rounded-2xl overflow-hidden border border-white/5 bg-black/20 pointer-events-none z-0";
+                        fsSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        fsSideImg.style.opacity = opacity;
+                        fsSideImg.style.backgroundPosition = `center ${posY}%`;
+                        fsSideImg.style.transform = `scale(${scale})`;
+                    }
+
+                    if (japaContentPanel) {
+                        japaContentPanel.className = "flex-1 flex flex-col justify-center items-center relative min-h-[380px] w-full z-10 pointer-events-auto";
+                    }
+                    if (fsContentPanel) {
+                        fsContentPanel.className = "flex-1 flex flex-col justify-center items-center relative overflow-hidden w-full z-10 pointer-events-auto";
+                    }
+                } else if (layout === 'center-top') {
+                    // Center Panel (Image on Top)
+                    if (japaWrapper) {
+                        japaWrapper.className = "w-full h-full flex flex-col items-center justify-center relative z-10 gap-6";
+                    }
+                    if (fsWrapper) {
+                        fsWrapper.className = "flex-1 flex flex-col items-center justify-center my-6 relative z-10 gap-8 overflow-hidden w-full";
+                    }
+
+                    if (japaSidePanel && japaSideImg) {
+                        japaSidePanel.className = "w-full md:w-1/3 rounded-xl overflow-hidden relative min-h-[200px] md:min-h-[300px] border border-gray-800/40 bg-black/20";
+                        japaSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        japaSideImg.style.opacity = opacity;
+                        japaSideImg.style.backgroundPosition = `center ${posY}%`;
+                        japaSideImg.style.transform = `scale(${scale})`;
+                    }
+
+                    if (fsSidePanel && fsSideImg) {
+                        fsSidePanel.className = "w-full md:w-1/3 rounded-2xl overflow-hidden relative min-h-[250px] md:min-h-[350px] border border-white/5 bg-black/20";
+                        fsSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        fsSideImg.style.opacity = opacity;
+                        fsSideImg.style.backgroundPosition = `center ${posY}%`;
+                        fsSideImg.style.transform = `scale(${scale})`;
+                    }
+                } else if (layout === 'center-bottom') {
+                    // Center Panel (Image on Bottom)
+                    if (japaWrapper) {
+                        japaWrapper.className = "w-full h-full flex flex-col-reverse items-center justify-center relative z-10 gap-6";
+                    }
+                    if (fsWrapper) {
+                        fsWrapper.className = "flex-1 flex flex-col-reverse items-center justify-center my-6 relative z-10 gap-8 overflow-hidden w-full";
+                    }
+
+                    if (japaSidePanel && japaSideImg) {
+                        japaSidePanel.className = "w-full md:w-1/3 rounded-xl overflow-hidden relative min-h-[200px] md:min-h-[300px] border border-gray-800/40 bg-black/20";
+                        japaSideImg.style.backgroundImage = `url(${m.bgImage})`;
+                        japaSideImg.style.opacity = opacity;
+                        japaSideImg.style.backgroundPosition = `center ${posY}%`;
+                        japaSideImg.style.transform = `scale(${scale})`;
+                    }
+
+                    if (fsSidePanel && fsSideImg) {
+                        fsSidePanel.className = "w-full md:w-1/3 rounded-2xl overflow-hidden relative min-h-[250px] md:min-h-[350px] border border-white/5 bg-black/20";
                         fsSideImg.style.backgroundImage = `url(${m.bgImage})`;
                         fsSideImg.style.opacity = opacity;
                         fsSideImg.style.backgroundPosition = `center ${posY}%`;
