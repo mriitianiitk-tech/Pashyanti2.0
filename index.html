@@ -272,6 +272,34 @@
             transition: opacity 0.3s ease, background-position 0.1s ease, transform 0.1s ease;
             transform-origin: center center;
         }
+
+        /* Dripping Tap falling words/phrases */
+        @keyframes dripFall {
+            0% {
+                top: 5%;
+                transform: translate(-50%, 0) scale(1.0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                top: 80%;
+                transform: translate(-50%, 0) scale(0.9);
+                opacity: 0;
+            }
+        }
+        .dripping-word {
+            position: absolute;
+            left: 50%;
+            pointer-events: none;
+            animation-name: dripFall;
+            animation-fill-mode: forwards;
+            white-space: normal;
+            max-width: 90%;
+            z-index: 30;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-[#0c0f1d] text-gray-200 min-h-screen flex flex-col transition-all-custom select-none">
@@ -681,14 +709,56 @@
 
             <!-- Interactive Highlight Modes -->
             <div class="space-y-2 border-t border-gray-800/80 pt-4">
-                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Highlight Interval</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="btn-mode-phrase" onclick="setHighlightMode('phrase')" class="py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold">
+                <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Highlight Interval & Mode</label>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button id="btn-mode-phrase" onclick="setHighlightMode('phrase')" class="py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
                         Phrase-by-Phrase
                     </button>
-                    <button id="btn-mode-line" onclick="setHighlightMode('line')" class="py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal">
+                    <button id="btn-mode-line" onclick="setHighlightMode('line')" class="py-2 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
                         Line-by-Line
                     </button>
+                    <button id="btn-mode-drip" onclick="setHighlightMode('drip')" class="py-2 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                        Dripping Tap
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drip Unit & Speed Selection (Only visible in Drip Mode) -->
+            <div id="drip-options-container" class="hidden space-y-4 border-t border-gray-800/40 pt-3">
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Drip falling option</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-drip-unit-phrase" onclick="setDripUnit('phrase')" class="py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
+                            Phrase-by-Phrase
+                        </button>
+                        <button id="btn-drip-unit-word" onclick="setDripUnit('word')" class="py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                            Word-by-Word
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-2 border-t border-gray-800/40 pt-3">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Drip Fall Speed Mode</label>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button id="btn-drip-speed-gravity" onclick="setDripSpeedMode('gravity')" class="py-1.5 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                            Gravity
+                        </button>
+                        <button id="btn-drip-speed-manual" onclick="setDripSpeedMode('manual')" class="py-1.5 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                            Manual
+                        </button>
+                        <button id="btn-drip-speed-synced" onclick="setDripSpeedMode('synced')" class="py-1.5 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition">
+                            Chant Synced
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Fall Duration Slider (Only visible in Drip Mode & Manual Speed) -->
+                <div id="drip-manual-speed-slider-container" class="hidden space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400 font-semibold">Fall Duration</span>
+                        <span id="drip-duration-label" class="text-amber-500 font-mono font-bold">2.0s</span>
+                    </div>
+                    <input type="range" id="drip-duration-slider" min="500" max="5000" step="100" value="2000" oninput="changeDripDuration(this.value)" class="w-full h-1 bg-gray-950 rounded accent-amber-500 cursor-pointer">
                 </div>
             </div>
 
@@ -984,6 +1054,9 @@
             activeLineIndex: 0,
             activeWordIndex: -1, // -1 means nothing in active line is highlighted yet
             highlightMode: "phrase", // "phrase" or "line"
+            dripUnit: "phrase", // "phrase" or "word"
+            dripSpeedMode: "gravity", // "gravity", "manual", "synced"
+            dripDuration: 2000, // fall duration in ms for manual speed
             focusView: "all", // "all", "hide-completed", "active-only", "word-only"
             hidePreviousLines: false,
             hideUpcomingLines: false,
@@ -1049,6 +1122,9 @@
                 highlightColorMode: state.highlightColorMode,
                 themeMode: state.themeMode,
                 highlightMode: state.highlightMode,
+                dripUnit: state.dripUnit || "phrase",
+                dripSpeedMode: state.dripSpeedMode || "gravity",
+                dripDuration: state.dripDuration || 2000,
                 focusView: state.focusView,
                 autoPlaySpeed: state.autoPlaySpeed || 2000,
                 customColors: JSON.parse(JSON.stringify(state.customColors))
@@ -1068,6 +1144,9 @@
                 state.highlightColorMode = m.preferences.highlightColorMode || "single";
                 state.themeMode = m.preferences.themeMode || "dark";
                 state.highlightMode = m.preferences.highlightMode || "phrase";
+                state.dripUnit = m.preferences.dripUnit || "phrase";
+                state.dripSpeedMode = m.preferences.dripSpeedMode || "gravity";
+                state.dripDuration = m.preferences.dripDuration || 2000;
                 state.focusView = m.preferences.focusView || "all";
                 state.autoPlaySpeed = m.preferences.autoPlaySpeed || 2000;
                 state.customColors = m.preferences.customColors || {
@@ -1088,6 +1167,9 @@
                     highlightColorMode: state.highlightColorMode,
                     themeMode: state.themeMode,
                     highlightMode: state.highlightMode,
+                    dripUnit: state.dripUnit || "phrase",
+                    dripSpeedMode: state.dripSpeedMode || "gravity",
+                    dripDuration: state.dripDuration || 2000,
                     focusView: state.focusView,
                     autoPlaySpeed: state.autoPlaySpeed || 2000,
                     customColors: JSON.parse(JSON.stringify(state.customColors))
@@ -1128,6 +1210,9 @@
                     if (parsed && Array.isArray(parsed.mantras)) {
                         state.mantras = parsed.mantras;
                         state.highlightMode = parsed.highlightMode || "phrase";
+                        state.dripUnit = parsed.dripUnit || "phrase";
+                        state.dripSpeedMode = parsed.dripSpeedMode || "gravity";
+                        state.dripDuration = parsed.dripDuration || 2000;
                         state.focusView = parsed.focusView || "all";
                         state.fontFamily = parsed.fontFamily || "Cinzel";
                         state.fontSize = parsed.fontSize || 32;
@@ -1210,6 +1295,9 @@
                 state.mantras = [...initialMantras];
                 state.selectedMantraId = "stotra-shrisuktam";
                 state.highlightMode = "phrase";
+                state.dripUnit = "phrase";
+                state.dripSpeedMode = "gravity";
+                state.dripDuration = 2000;
                 state.focusView = "all";
                 state.fontFamily = "Cinzel";
                 state.fontSize = 32;
@@ -1290,6 +1378,67 @@
             for (let i = 0; i < 5; i++) {
                 const picker = document.getElementById(`picker-word-${i}`);
                 if (picker) picker.value = wordColors[i];
+            }
+
+            // Sync highlight mode buttons in settings modal
+            const phraseBtn = document.getElementById('btn-mode-phrase');
+            const lineBtn = document.getElementById('btn-mode-line');
+            const dripBtn = document.getElementById('btn-mode-drip');
+            const dripOptionsContainer = document.getElementById('drip-options-container');
+            
+            [phraseBtn, lineBtn, dripBtn].forEach(btn => {
+                if (btn) btn.className = "py-2 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+            });
+            
+            if (state.highlightMode === 'phrase') {
+                if (phraseBtn) phraseBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (dripOptionsContainer) dripOptionsContainer.classList.add('hidden');
+            } else if (state.highlightMode === 'line') {
+                if (lineBtn) lineBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (dripOptionsContainer) dripOptionsContainer.classList.add('hidden');
+            } else if (state.highlightMode === 'drip') {
+                if (dripBtn) dripBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (dripOptionsContainer) dripOptionsContainer.classList.remove('hidden');
+                
+                // Sync drip unit sub-buttons
+                const dripPhraseBtn = document.getElementById('btn-drip-unit-phrase');
+                const dripWordBtn = document.getElementById('btn-drip-unit-word');
+                const unit = state.dripUnit || 'phrase';
+                if (unit === 'phrase') {
+                    if (dripPhraseBtn) dripPhraseBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                    if (dripWordBtn) dripWordBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                } else {
+                    if (dripWordBtn) dripWordBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                    if (dripPhraseBtn) dripPhraseBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                }
+
+                // Sync drip speed mode buttons
+                const speedModes = ['gravity', 'manual', 'synced'];
+                speedModes.forEach(m => {
+                    const btn = document.getElementById(`btn-drip-speed-${m}`);
+                    if (btn) {
+                        if (m === state.dripSpeedMode) {
+                            btn.className = "py-1.5 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                        } else {
+                            btn.className = "py-1.5 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                        }
+                    }
+                });
+
+                // Sync manual speed slider visibility & value
+                const manualContainer = document.getElementById('drip-manual-speed-slider-container');
+                if (manualContainer) {
+                    if (state.dripSpeedMode === 'manual') {
+                        manualContainer.classList.remove('hidden');
+                        
+                        const slider = document.getElementById('drip-duration-slider');
+                        const label = document.getElementById('drip-duration-label');
+                        if (slider) slider.value = state.dripDuration || 2000;
+                        if (label) label.textContent = ((state.dripDuration || 2000) / 1000).toFixed(1) + 's';
+                    } else {
+                        manualContainer.classList.add('hidden');
+                    }
+                }
             }
         }
 
@@ -1491,17 +1640,95 @@
             
             const phraseBtn = document.getElementById('btn-mode-phrase');
             const lineBtn = document.getElementById('btn-mode-line');
+            const dripBtn = document.getElementById('btn-mode-drip');
+            const dripOptionsContainer = document.getElementById('drip-options-container');
+            const badge = document.getElementById('highlight-mode-badge');
+            
+            [phraseBtn, lineBtn, dripBtn].forEach(btn => {
+                if (btn) btn.className = "py-2 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+            });
+            
             if (mode === 'phrase') {
-                phraseBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold";
-                lineBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal";
-                document.getElementById('highlight-mode-badge').textContent = "Phrase Mode";
-            } else {
-                lineBtn.className = "py-2 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold";
-                phraseBtn.className = "py-2 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal";
-                document.getElementById('highlight-mode-badge').textContent = "Line Mode";
+                if (phraseBtn) phraseBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (badge) badge.textContent = "Phrase Mode";
+                if (dripOptionsContainer) dripOptionsContainer.classList.add('hidden');
+            } else if (mode === 'line') {
+                if (lineBtn) lineBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (badge) badge.textContent = "Line Mode";
+                if (dripOptionsContainer) dripOptionsContainer.classList.add('hidden');
+            } else if (mode === 'drip') {
+                if (dripBtn) dripBtn.className = "py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (badge) badge.textContent = (state.dripUnit === 'word') ? "Drip Mode (Word)" : "Drip Mode (Phrase)";
+                if (dripOptionsContainer) dripOptionsContainer.classList.remove('hidden');
+                
+                // Sync the sub-buttons for drip unit
+                setDripUnit(state.dripUnit || 'phrase');
+                setDripSpeedMode(state.dripSpeedMode || 'gravity');
             }
 
             resetHighlightState();
+            saveActivePreferencesToMantra();
+        }
+
+        function setDripUnit(unit) {
+            state.dripUnit = unit;
+            
+            const phraseBtn = document.getElementById('btn-drip-unit-phrase');
+            const wordBtn = document.getElementById('btn-drip-unit-word');
+            const badge = document.getElementById('highlight-mode-badge');
+            
+            if (unit === 'phrase') {
+                if (phraseBtn) phraseBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (wordBtn) wordBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                if (badge && state.highlightMode === 'drip') badge.textContent = "Drip Mode (Phrase)";
+            } else {
+                if (wordBtn) wordBtn.className = "py-1.5 text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                if (phraseBtn) phraseBtn.className = "py-1.5 text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                if (badge && state.highlightMode === 'drip') badge.textContent = "Drip Mode (Word)";
+            }
+            
+            resetHighlightState();
+            saveActivePreferencesToMantra();
+        }
+
+        function setDripSpeedMode(mode) {
+            state.dripSpeedMode = mode;
+            
+            const modes = ['gravity', 'manual', 'synced'];
+            modes.forEach(m => {
+                const btn = document.getElementById(`btn-drip-speed-${m}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.className = "py-1.5 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition";
+                    } else {
+                        btn.className = "py-1.5 text-[10px] md:text-xs rounded border border-gray-800 bg-gray-950 text-gray-400 font-normal transition";
+                    }
+                }
+            });
+            
+            const manualContainer = document.getElementById('drip-manual-speed-slider-container');
+            if (manualContainer) {
+                if (mode === 'manual') {
+                    manualContainer.classList.remove('hidden');
+                    
+                    const slider = document.getElementById('drip-duration-slider');
+                    const label = document.getElementById('drip-duration-label');
+                    if (slider) slider.value = state.dripDuration || 2000;
+                    if (label) label.textContent = ((state.dripDuration || 2000) / 1000).toFixed(1) + 's';
+                } else {
+                    manualContainer.classList.add('hidden');
+                }
+            }
+            
+            saveActivePreferencesToMantra();
+        }
+
+        function changeDripDuration(val) {
+            state.dripDuration = parseInt(val);
+            const label = document.getElementById('drip-duration-label');
+            if (label) {
+                label.textContent = (state.dripDuration / 1000).toFixed(1) + 's';
+            }
             saveActivePreferencesToMantra();
         }
 
@@ -1952,6 +2179,108 @@
             renderAll();
         }
 
+        function spawnDrippingText(text) {
+            const item = getSelectedMantra();
+            const parsed = parseSacredText(item.text);
+            
+            const targetPanels = [];
+            if (state.isFullscreen) {
+                targetPanels.push(document.getElementById('fs-content-panel'));
+            } else {
+                targetPanels.push(document.getElementById('japa-content-panel'));
+            }
+
+            targetPanels.forEach(panel => {
+                if (!panel) return;
+                
+                const dripEl = document.createElement('div');
+                dripEl.className = 'dripping-word font-serif';
+                
+                const baseSize = state.isFullscreen ? Math.max(36, Math.floor(state.fontSize * 1.5)) : Math.max(28, state.fontSize);
+                dripEl.style.fontSize = baseSize + 'px';
+                dripEl.style.fontFamily = 'var(--japa-font)';
+                
+                if (state.japaTextStyle === 'italic') {
+                    dripEl.style.fontStyle = 'italic';
+                    dripEl.style.fontWeight = 'normal';
+                } else if (state.japaTextStyle === 'normal') {
+                    dripEl.style.fontStyle = 'normal';
+                    dripEl.style.fontWeight = 'normal';
+                } else {
+                    dripEl.style.fontStyle = 'normal';
+                    dripEl.style.fontWeight = 'bold';
+                }
+
+                // Render content and apply custom painted colors / multi-color styles
+                if (state.dripUnit === 'phrase') {
+                    dripEl.innerHTML = '';
+                    const lineWords = parsed[state.activeParagraphIndex] && parsed[state.activeParagraphIndex][state.activeLineIndex];
+                    if (lineWords) {
+                        lineWords.forEach((word, wordIdx) => {
+                            const wordSpan = document.createElement('span');
+                            wordSpan.textContent = word;
+                            wordSpan.className = 'mx-1.5 px-0.5 rounded';
+                            
+                            const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${wordIdx}`;
+                            let wordColor = 'var(--japa-active)';
+                            if (item.wordColorMap && item.wordColorMap[key]) {
+                                wordColor = item.wordColorMap[key];
+                            } else if (state.highlightColorMode === 'multi') {
+                                const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                                wordColor = wordColors[wordIdx % wordColors.length];
+                            }
+                            
+                            wordSpan.style.color = wordColor;
+                            wordSpan.style.textShadow = `0 0 20px ${wordColor}`;
+                            dripEl.appendChild(wordSpan);
+                        });
+                    } else {
+                        dripEl.textContent = text;
+                        dripEl.style.color = 'var(--japa-active)';
+                        dripEl.style.textShadow = '0 0 20px var(--japa-active)';
+                    }
+                } else {
+                    dripEl.textContent = text;
+                    
+                    const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${state.activeWordIndex}`;
+                    let wordColor = 'var(--japa-active)';
+                    if (item.wordColorMap && item.wordColorMap[key]) {
+                        wordColor = item.wordColorMap[key];
+                    } else if (state.highlightColorMode === 'multi') {
+                        const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                        wordColor = wordColors[state.activeWordIndex % wordColors.length];
+                    }
+                    
+                    dripEl.style.color = wordColor;
+                    dripEl.style.textShadow = `0 0 20px ${wordColor}`;
+                }
+
+                // Calculate dynamic speed and timing curve
+                let duration = 2500;
+                let timingFunction = 'ease-in-out';
+                
+                if (state.dripSpeedMode === 'gravity') {
+                    duration = 2000;
+                    timingFunction = 'cubic-bezier(0.5, 0, 1, 0.5)'; // gravity acceleration
+                } else if (state.dripSpeedMode === 'manual') {
+                    duration = state.dripDuration || 2000;
+                    timingFunction = 'ease-in-out';
+                } else if (state.dripSpeedMode === 'synced') {
+                    duration = Math.max(500, state.autoPlaySpeed * 0.85); // falls in 85% of Auto Chant Interval
+                    timingFunction = 'ease-in-out';
+                }
+
+                dripEl.style.animationDuration = duration + 'ms';
+                dripEl.style.animationTimingFunction = timingFunction;
+
+                panel.appendChild(dripEl);
+                
+                setTimeout(() => {
+                    dripEl.remove();
+                }, duration);
+            });
+        }
+
         function handleStepForward() {
             const item = getSelectedMantra();
             const parsed = parseSacredText(item.text);
@@ -1961,6 +2290,61 @@
 
             const currentParagraph = parsed[state.activeParagraphIndex];
             const currentLine = currentParagraph[state.activeLineIndex];
+
+            if (state.highlightMode === 'drip') {
+                if (state.dripUnit === 'word') {
+                    if (state.activeWordIndex === -1) {
+                        state.activeWordIndex = 0;
+                    } else if (state.activeWordIndex < currentLine.length - 1) {
+                        state.activeWordIndex++;
+                    } else {
+                        if (state.activeLineIndex < currentParagraph.length - 1) {
+                            state.activeLineIndex++;
+                            state.activeWordIndex = 0;
+                        } else {
+                            if (state.activeParagraphIndex < parsed.length - 1) {
+                                state.activeParagraphIndex++;
+                                state.activeLineIndex = 0;
+                                state.activeWordIndex = 0;
+                                showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
+                            } else {
+                                completeOneFullChant(item);
+                                resetHighlightState();
+                                return;
+                            }
+                        }
+                    }
+                    const text = parsed[state.activeParagraphIndex][state.activeLineIndex][state.activeWordIndex];
+                    spawnDrippingText(text);
+                } else {
+                    if (state.activeWordIndex === -1) {
+                        state.activeWordIndex = 0;
+                        state.activeLineIndex = 0;
+                    } else {
+                        if (state.activeLineIndex < currentParagraph.length - 1) {
+                            state.activeLineIndex++;
+                        } else {
+                            if (state.activeParagraphIndex < parsed.length - 1) {
+                                state.activeParagraphIndex++;
+                                state.activeLineIndex = 0;
+                                showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
+                            } else {
+                                completeOneFullChant(item);
+                                resetHighlightState();
+                                return;
+                            }
+                        }
+                    }
+                    const text = parsed[state.activeParagraphIndex][state.activeLineIndex].join(' ');
+                    spawnDrippingText(text);
+                }
+                renderJapaScreen();
+                return;
+            }
 
             if (state.highlightMode === 'phrase') {
                 if (state.activeWordIndex === -1) {
@@ -2021,6 +2405,62 @@
             triggerVibration(15);
 
             const currentParagraph = parsed[state.activeParagraphIndex];
+
+            if (state.highlightMode === 'drip') {
+                if (state.activeParagraphIndex === 0 && state.activeLineIndex === 0 && state.activeWordIndex === -1) {
+                    return;
+                }
+
+                if (state.dripUnit === 'word') {
+                    if (state.activeWordIndex > 0) {
+                        state.activeWordIndex--;
+                    } else if (state.activeWordIndex === 0) {
+                        state.activeWordIndex = -1;
+                    } else {
+                        if (state.activeLineIndex > 0) {
+                            state.activeLineIndex--;
+                            state.activeWordIndex = currentParagraph[state.activeLineIndex].length - 1;
+                        } else {
+                            if (state.activeParagraphIndex > 0) {
+                                state.activeParagraphIndex--;
+                                const prevParagraph = parsed[state.activeParagraphIndex];
+                                state.activeLineIndex = prevParagraph.length - 1;
+                                state.activeWordIndex = prevParagraph[state.activeLineIndex].length - 1;
+                                
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
+                            }
+                        }
+                    }
+                    
+                    if (state.activeWordIndex !== -1) {
+                        const text = parsed[state.activeParagraphIndex][state.activeLineIndex][state.activeWordIndex];
+                        spawnDrippingText(text);
+                    }
+                } else {
+                    if (state.activeLineIndex > 0) {
+                        state.activeLineIndex--;
+                    } else {
+                        if (state.activeParagraphIndex > 0) {
+                            state.activeParagraphIndex--;
+                            const prevParagraph = parsed[state.activeParagraphIndex];
+                            state.activeLineIndex = prevParagraph.length - 1;
+                            
+                            const jumper = document.getElementById('stotra-stanza-jumper');
+                            if (jumper) jumper.value = state.activeParagraphIndex;
+                        } else {
+                            state.activeWordIndex = -1;
+                        }
+                    }
+                    
+                    if (state.activeWordIndex !== -1) {
+                        const text = parsed[state.activeParagraphIndex][state.activeLineIndex].join(' ');
+                        spawnDrippingText(text);
+                    }
+                }
+                renderJapaScreen();
+                return;
+            }
 
             if (state.highlightMode === 'phrase') {
                 if (state.activeParagraphIndex === 0 && state.activeLineIndex === 0 && state.activeWordIndex === -1) {
@@ -2384,6 +2824,28 @@
             if (fsDisplayBox) {
                 fsDisplayBox.style.fontSize = Math.max(28, Math.floor(state.fontSize * 1.3)) + "px";
                 fsDisplayBox.innerHTML = '';
+            }
+
+            if (state.highlightMode === 'drip') {
+                if (state.activeWordIndex === -1 && state.activeLineIndex === 0 && state.activeParagraphIndex === 0) {
+                    const promptDiv = document.createElement('div');
+                    promptDiv.className = 'text-center opacity-40 text-sm font-mono tracking-wider italic';
+                    promptDiv.textContent = state.isFullscreen ? '[Tap screen or press Space to start]' : 'ॐ\n[Tap here or press Space to start Dripping Tap Japa]';
+                    promptDiv.style.whiteSpace = 'pre-line';
+                    displayBox.appendChild(promptDiv);
+                    if (fsDisplayBox) {
+                        const fsPromptDiv = promptDiv.cloneNode(true);
+                        fsDisplayBox.appendChild(fsPromptDiv);
+                    }
+                }
+                
+                // Update footer line markers
+                const lineIndicator = document.getElementById('active-line-indicator');
+                const totalLinesInPara = parsed[state.activeParagraphIndex] ? parsed[state.activeParagraphIndex].length : 1;
+                if (lineIndicator) {
+                    lineIndicator.textContent = `Stanza ${state.activeParagraphIndex + 1} • Line ${state.activeLineIndex + 1} of ${totalLinesInPara}`;
+                }
+                return;
             }
 
             // Loop 3D layout Structure
