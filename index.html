@@ -184,19 +184,22 @@
         body.light-mode #focus-btn-all,
         body.light-mode #focus-btn-hide-completed,
         body.light-mode #focus-btn-active-only,
-        body.light-mode #focus-btn-word-only {
+        body.light-mode #focus-btn-word-only,
+        body.light-mode #focus-btn-active-word-only {
             border-color: #e5e7eb !important;
         }
         body.light-mode #focus-btn-all:not(.bg-amber-600),
         body.light-mode #focus-btn-hide-completed:not(.bg-amber-600),
         body.light-mode #focus-btn-active-only:not(.bg-amber-600),
-        body.light-mode #focus-btn-word-only:not(.bg-amber-600) {
+        body.light-mode #focus-btn-word-only:not(.bg-amber-600),
+        body.light-mode #focus-btn-active-word-only:not(.bg-amber-600) {
             color: #4b5563 !important;
         }
         body.light-mode #focus-btn-all:not(.bg-amber-600):hover,
         body.light-mode #focus-btn-hide-completed:not(.bg-amber-600):hover,
         body.light-mode #focus-btn-active-only:not(.bg-amber-600):hover,
-        body.light-mode #focus-btn-word-only:not(.bg-amber-600):hover {
+        body.light-mode #focus-btn-word-only:not(.bg-amber-600):hover,
+        body.light-mode #focus-btn-active-word-only:not(.bg-amber-600):hover {
             background-color: #f3f4f6 !important;
             color: #111827 !important;
         }
@@ -288,6 +291,39 @@
                 transform: translate(-50%, 0) scale(0.9);
                 opacity: 0;
             }
+        }
+        @keyframes dropCreate {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -5px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1.0);
+            }
+        }
+        .dripping-word-static {
+            position: absolute;
+            left: 50%;
+            top: 5%;
+            transform: translate(-50%, 0) scale(1.0);
+            pointer-events: none;
+            white-space: normal;
+            max-width: 90%;
+            z-index: 30;
+            text-align: center;
+            animation: dropCreate 0.3s ease-out forwards;
+        }
+        .dripping-word-falling {
+            position: absolute;
+            left: 50%;
+            pointer-events: none;
+            animation-name: dripFall;
+            animation-fill-mode: forwards;
+            white-space: normal;
+            max-width: 90%;
+            z-index: 30;
+            text-align: center;
         }
         .dripping-word {
             position: absolute;
@@ -398,6 +434,9 @@
                         </button>
                         <button onclick="setFocusView('word-only')" id="focus-btn-word-only" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
                             Word Only
+                        </button>
+                        <button onclick="setFocusView('active-word-only')" id="focus-btn-active-word-only" class="px-2.5 py-1 rounded text-xs transition duration-150 font-medium">
+                            Active Word Only
                         </button>
                     </div>
                 </div>
@@ -1088,6 +1127,9 @@
             loadSavedDatabase();
             loadPreferencesFromMantra();
             populateMantraSelector();
+            if (state.highlightMode === 'drip' && state.activeWordIndex === -1) {
+                state.activeWordIndex = 0;
+            }
             setFocusView(state.focusView || "all");
             renderAll();
             
@@ -1608,7 +1650,7 @@
 
         function setFocusView(mode) {
             state.focusView = mode;
-            const buttons = ['all', 'hide-completed', 'active-only', 'word-only'];
+            const buttons = ['all', 'hide-completed', 'active-only', 'word-only', 'active-word-only'];
             buttons.forEach(b => {
                 const btn = document.getElementById(`focus-btn-${b}`);
                 if (btn) {
@@ -1626,7 +1668,7 @@
             } else if (mode === 'hide-completed') {
                 state.hidePreviousLines = true;
                 state.hideUpcomingLines = false;
-            } else if (mode === 'active-only' || mode === 'word-only') {
+            } else if (mode === 'active-only' || mode === 'word-only' || mode === 'active-word-only') {
                 state.hidePreviousLines = true;
                 state.hideUpcomingLines = true;
             }
@@ -2170,7 +2212,7 @@
         function resetHighlightState() {
             state.activeParagraphIndex = 0;
             state.activeLineIndex = 0;
-            state.activeWordIndex = -1;
+            state.activeWordIndex = (state.highlightMode === 'drip') ? 0 : -1;
             
             // Sync quick-jump selectors on resetting round
             const jumper = document.getElementById('stotra-stanza-jumper');
@@ -2179,84 +2221,73 @@
             renderAll();
         }
 
-        function spawnDrippingText(text) {
+        function createDripElement(isStatic) {
             const item = getSelectedMantra();
             const parsed = parseSacredText(item.text);
             
-            const targetPanels = [];
-            if (state.isFullscreen) {
-                targetPanels.push(document.getElementById('fs-content-panel'));
+            const dripEl = document.createElement('div');
+            dripEl.className = (isStatic ? 'dripping-word-static' : 'dripping-word-falling') + ' font-serif';
+            
+            const baseSize = state.isFullscreen ? Math.max(36, Math.floor(state.fontSize * 1.5)) : Math.max(28, state.fontSize);
+            dripEl.style.fontSize = baseSize + 'px';
+            dripEl.style.fontFamily = 'var(--japa-font)';
+            
+            if (state.japaTextStyle === 'italic') {
+                dripEl.style.fontStyle = 'italic';
+                dripEl.style.fontWeight = 'normal';
+            } else if (state.japaTextStyle === 'normal') {
+                dripEl.style.fontStyle = 'normal';
+                dripEl.style.fontWeight = 'normal';
             } else {
-                targetPanels.push(document.getElementById('japa-content-panel'));
+                dripEl.style.fontStyle = 'normal';
+                dripEl.style.fontWeight = 'bold';
             }
 
-            targetPanels.forEach(panel => {
-                if (!panel) return;
-                
-                const dripEl = document.createElement('div');
-                dripEl.className = 'dripping-word font-serif';
-                
-                const baseSize = state.isFullscreen ? Math.max(36, Math.floor(state.fontSize * 1.5)) : Math.max(28, state.fontSize);
-                dripEl.style.fontSize = baseSize + 'px';
-                dripEl.style.fontFamily = 'var(--japa-font)';
-                
-                if (state.japaTextStyle === 'italic') {
-                    dripEl.style.fontStyle = 'italic';
-                    dripEl.style.fontWeight = 'normal';
-                } else if (state.japaTextStyle === 'normal') {
-                    dripEl.style.fontStyle = 'normal';
-                    dripEl.style.fontWeight = 'normal';
-                } else {
-                    dripEl.style.fontStyle = 'normal';
-                    dripEl.style.fontWeight = 'bold';
+            // Render content and apply custom painted colors / multi-color styles
+            if (state.dripUnit === 'phrase') {
+                dripEl.innerHTML = '';
+                const lineWords = parsed[state.activeParagraphIndex] && parsed[state.activeParagraphIndex][state.activeLineIndex];
+                if (lineWords) {
+                    lineWords.forEach((word, wordIdx) => {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.textContent = word;
+                        wordSpan.className = 'mx-1.5 px-0.5 rounded';
+                        
+                        const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${wordIdx}`;
+                        let wordColor = 'var(--japa-active)';
+                        if (item.wordColorMap && item.wordColorMap[key]) {
+                            wordColor = item.wordColorMap[key];
+                        } else if (state.highlightColorMode === 'multi') {
+                            const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                            wordColor = wordColors[wordIdx % wordColors.length];
+                        }
+                        
+                        wordSpan.style.color = wordColor;
+                        wordSpan.style.textShadow = `0 0 20px ${wordColor}`;
+                        dripEl.appendChild(wordSpan);
+                    });
                 }
-
-                // Render content and apply custom painted colors / multi-color styles
-                if (state.dripUnit === 'phrase') {
-                    dripEl.innerHTML = '';
-                    const lineWords = parsed[state.activeParagraphIndex] && parsed[state.activeParagraphIndex][state.activeLineIndex];
-                    if (lineWords) {
-                        lineWords.forEach((word, wordIdx) => {
-                            const wordSpan = document.createElement('span');
-                            wordSpan.textContent = word;
-                            wordSpan.className = 'mx-1.5 px-0.5 rounded';
-                            
-                            const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${wordIdx}`;
-                            let wordColor = 'var(--japa-active)';
-                            if (item.wordColorMap && item.wordColorMap[key]) {
-                                wordColor = item.wordColorMap[key];
-                            } else if (state.highlightColorMode === 'multi') {
-                                const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
-                                wordColor = wordColors[wordIdx % wordColors.length];
-                            }
-                            
-                            wordSpan.style.color = wordColor;
-                            wordSpan.style.textShadow = `0 0 20px ${wordColor}`;
-                            dripEl.appendChild(wordSpan);
-                        });
-                    } else {
-                        dripEl.textContent = text;
-                        dripEl.style.color = 'var(--japa-active)';
-                        dripEl.style.textShadow = '0 0 20px var(--japa-active)';
-                    }
-                } else {
-                    dripEl.textContent = text;
-                    
-                    const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${state.activeWordIndex}`;
-                    let wordColor = 'var(--japa-active)';
-                    if (item.wordColorMap && item.wordColorMap[key]) {
-                        wordColor = item.wordColorMap[key];
-                    } else if (state.highlightColorMode === 'multi') {
-                        const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
-                        wordColor = wordColors[state.activeWordIndex % wordColors.length];
-                    }
-                    
-                    dripEl.style.color = wordColor;
-                    dripEl.style.textShadow = `0 0 20px ${wordColor}`;
+            } else {
+                const lineWords = parsed[state.activeParagraphIndex] && parsed[state.activeParagraphIndex][state.activeLineIndex];
+                const word = lineWords && lineWords[state.activeWordIndex];
+                dripEl.textContent = word || "";
+                
+                const key = `${state.activeParagraphIndex}-${state.activeLineIndex}-${state.activeWordIndex}`;
+                let wordColor = 'var(--japa-active)';
+                if (item.wordColorMap && item.wordColorMap[key]) {
+                    wordColor = item.wordColorMap[key];
+                } else if (state.highlightColorMode === 'multi') {
+                    const wordColors = state.customColors.wordColors || ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
+                    wordColor = wordColors[state.activeWordIndex % wordColors.length];
                 }
+                
+                dripEl.style.color = wordColor;
+                dripEl.style.textShadow = `0 0 20px ${wordColor}`;
+            }
 
+            if (!isStatic) {
                 // Calculate dynamic speed and timing curve
-                let duration = 2500;
+                let duration = 2000;
                 let timingFunction = 'ease-in-out';
                 
                 if (state.dripSpeedMode === 'gravity') {
@@ -2272,13 +2303,9 @@
 
                 dripEl.style.animationDuration = duration + 'ms';
                 dripEl.style.animationTimingFunction = timingFunction;
+            }
 
-                panel.appendChild(dripEl);
-                
-                setTimeout(() => {
-                    dripEl.remove();
-                }, duration);
-            });
+            return dripEl;
         }
 
         function handleStepForward() {
@@ -2288,17 +2315,57 @@
 
             triggerVibration(15);
 
-            const currentParagraph = parsed[state.activeParagraphIndex];
-            const currentLine = currentParagraph[state.activeLineIndex];
-
             if (state.highlightMode === 'drip') {
+                // Remove only the static element, let existing falling elements keep falling
+                const panels = [];
+                if (state.isFullscreen) {
+                    panels.push(document.getElementById('fs-content-panel'));
+                } else {
+                    panels.push(document.getElementById('japa-content-panel'));
+                }
+                panels.forEach(panel => {
+                    if (!panel) return;
+                    const oldElements = panel.querySelectorAll('.dripping-word-static');
+                    oldElements.forEach(el => el.remove());
+                });
+
+                // Calculate fall duration
+                let duration = 2000;
+                if (state.dripSpeedMode === 'gravity') {
+                    duration = 2000;
+                } else if (state.dripSpeedMode === 'manual') {
+                    duration = state.dripDuration || 2000;
+                } else if (state.dripSpeedMode === 'synced') {
+                    duration = Math.max(500, state.autoPlaySpeed * 0.85);
+                }
+
+                // 1. Spawn the falling element for the CURRENT word/phrase
+                panels.forEach(panel => {
+                    if (!panel) return;
+                    const dripEl = createDripElement(false); // isStatic = false (falling)
+                    panel.appendChild(dripEl);
+                    
+                    // Remove this specific falling element when its fall duration finishes
+                    setTimeout(() => {
+                        dripEl.remove();
+                    }, duration);
+                });
+
+                // 2. Advance the indices to the NEXT word/phrase
+                const currentParagraph = parsed[state.activeParagraphIndex];
+                const currentLine = currentParagraph ? currentParagraph[state.activeLineIndex] : null;
+                
+                let completedRound = false;
+
                 if (state.dripUnit === 'word') {
                     if (state.activeWordIndex === -1) {
                         state.activeWordIndex = 0;
-                    } else if (state.activeWordIndex < currentLine.length - 1) {
+                    }
+                    
+                    if (currentLine && state.activeWordIndex < currentLine.length - 1) {
                         state.activeWordIndex++;
                     } else {
-                        if (state.activeLineIndex < currentParagraph.length - 1) {
+                        if (currentParagraph && state.activeLineIndex < currentParagraph.length - 1) {
                             state.activeLineIndex++;
                             state.activeWordIndex = 0;
                         } else {
@@ -2310,41 +2377,43 @@
                                 const jumper = document.getElementById('stotra-stanza-jumper');
                                 if (jumper) jumper.value = state.activeParagraphIndex;
                             } else {
-                                completeOneFullChant(item);
-                                resetHighlightState();
-                                return;
+                                completedRound = true;
                             }
                         }
                     }
-                    const text = parsed[state.activeParagraphIndex][state.activeLineIndex][state.activeWordIndex];
-                    spawnDrippingText(text);
-                } else {
-                    if (state.activeWordIndex === -1) {
-                        state.activeWordIndex = 0;
-                        state.activeLineIndex = 0;
+                } else { // dripUnit === 'phrase'
+                    if (currentParagraph && state.activeLineIndex < currentParagraph.length - 1) {
+                        state.activeLineIndex++;
                     } else {
-                        if (state.activeLineIndex < currentParagraph.length - 1) {
-                            state.activeLineIndex++;
+                        if (state.activeParagraphIndex < parsed.length - 1) {
+                            state.activeParagraphIndex++;
+                            state.activeLineIndex = 0;
+                            showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
+                            const jumper = document.getElementById('stotra-stanza-jumper');
+                            if (jumper) jumper.value = state.activeParagraphIndex;
                         } else {
-                            if (state.activeParagraphIndex < parsed.length - 1) {
-                                state.activeParagraphIndex++;
-                                state.activeLineIndex = 0;
-                                showToast(`Advancing to Stanza ${state.activeParagraphIndex + 1}`);
-                                const jumper = document.getElementById('stotra-stanza-jumper');
-                                if (jumper) jumper.value = state.activeParagraphIndex;
-                            } else {
-                                completeOneFullChant(item);
-                                resetHighlightState();
-                                return;
-                            }
+                            completedRound = true;
                         }
                     }
-                    const text = parsed[state.activeParagraphIndex][state.activeLineIndex].join(' ');
-                    spawnDrippingText(text);
                 }
+
+                // If round completed, log chant and reset indices
+                if (completedRound) {
+                    completeOneFullChant(item);
+                    state.activeParagraphIndex = 0;
+                    state.activeLineIndex = 0;
+                    state.activeWordIndex = 0;
+                    const jumper = document.getElementById('stotra-stanza-jumper');
+                    if (jumper) jumper.value = 0;
+                }
+
+                // Sync counter labels, progress bars, and IMMEDIATELY render next static top word
                 renderJapaScreen();
                 return;
             }
+
+            const currentParagraph = parsed[state.activeParagraphIndex];
+            const currentLine = currentParagraph[state.activeLineIndex];
 
             if (state.highlightMode === 'phrase') {
                 if (state.activeWordIndex === -1) {
@@ -2407,8 +2476,9 @@
             const currentParagraph = parsed[state.activeParagraphIndex];
 
             if (state.highlightMode === 'drip') {
-                if (state.activeParagraphIndex === 0 && state.activeLineIndex === 0 && state.activeWordIndex === -1) {
-                    return;
+                if (state.dripTimeoutId) {
+                    clearTimeout(state.dripTimeoutId);
+                    state.dripTimeoutId = null;
                 }
 
                 if (state.dripUnit === 'word') {
@@ -2432,11 +2502,6 @@
                             }
                         }
                     }
-                    
-                    if (state.activeWordIndex !== -1) {
-                        const text = parsed[state.activeParagraphIndex][state.activeLineIndex][state.activeWordIndex];
-                        spawnDrippingText(text);
-                    }
                 } else {
                     if (state.activeLineIndex > 0) {
                         state.activeLineIndex--;
@@ -2452,12 +2517,12 @@
                             state.activeWordIndex = -1;
                         }
                     }
-                    
-                    if (state.activeWordIndex !== -1) {
-                        const text = parsed[state.activeParagraphIndex][state.activeLineIndex].join(' ');
-                        spawnDrippingText(text);
-                    }
                 }
+                
+                if (state.activeWordIndex === -1) {
+                    state.activeWordIndex = 0;
+                }
+                
                 renderJapaScreen();
                 return;
             }
@@ -2526,7 +2591,7 @@
         function jumpToStanza(index) {
             state.activeParagraphIndex = parseInt(index);
             state.activeLineIndex = 0;
-            state.activeWordIndex = -1;
+            state.activeWordIndex = (state.highlightMode === 'drip') ? 0 : -1;
             renderAll();
             showToast(`Jumped to Stanza ${state.activeParagraphIndex + 1}`);
         }
@@ -2718,6 +2783,21 @@
 
             applyBackgroundStyles(item);
 
+            // Clean up any lingering dripping elements if highlightMode is NOT drip
+            if (state.highlightMode !== 'drip') {
+                const panels = [];
+                if (state.isFullscreen) {
+                    panels.push(document.getElementById('fs-content-panel'));
+                } else {
+                    panels.push(document.getElementById('japa-content-panel'));
+                }
+                panels.forEach(panel => {
+                    if (!panel) return;
+                    const oldElements = panel.querySelectorAll('.dripping-word-static, .dripping-word-falling, .dripping-word');
+                    oldElements.forEach(el => el.remove());
+                });
+            }
+
             // 1. Sync labels based on Mantra vs Stotra
             const japaCounterLabel = document.getElementById('japa-counter-label');
             const malaStatsBlock = document.getElementById('mala-stats-block');
@@ -2827,18 +2907,24 @@
             }
 
             if (state.highlightMode === 'drip') {
-                if (state.activeWordIndex === -1 && state.activeLineIndex === 0 && state.activeParagraphIndex === 0) {
-                    const promptDiv = document.createElement('div');
-                    promptDiv.className = 'text-center opacity-40 text-sm font-mono tracking-wider italic';
-                    promptDiv.textContent = state.isFullscreen ? '[Tap screen or press Space to start]' : 'ॐ\n[Tap here or press Space to start Dripping Tap Japa]';
-                    promptDiv.style.whiteSpace = 'pre-line';
-                    displayBox.appendChild(promptDiv);
-                    if (fsDisplayBox) {
-                        const fsPromptDiv = promptDiv.cloneNode(true);
-                        fsDisplayBox.appendChild(fsPromptDiv);
-                    }
+                const panels = [];
+                if (state.isFullscreen) {
+                    panels.push(document.getElementById('fs-content-panel'));
+                } else {
+                    panels.push(document.getElementById('japa-content-panel'));
                 }
-                
+                panels.forEach(panel => {
+                    if (!panel) return;
+                    
+                    // Remove only the static element, let existing falling elements keep falling
+                    const staticEls = panel.querySelectorAll('.dripping-word-static');
+                    staticEls.forEach(el => el.remove());
+                    
+                    // Immediately render the static top word for the current indices
+                    const staticEl = createDripElement(true); // isStatic = true
+                    panel.appendChild(staticEl);
+                });
+
                 // Update footer line markers
                 const lineIndicator = document.getElementById('active-line-indicator');
                 const totalLinesInPara = parsed[state.activeParagraphIndex] ? parsed[state.activeParagraphIndex].length : 1;
@@ -2910,15 +2996,25 @@
 
                         // Generate highlights for individual words
                         lineWords.forEach((word, wordIdx) => {
-                            // Check if word should be visible in 'word-only' focus view
+                            // Check if word should be visible in 'word-only' and 'active-word-only' focus views
                             let isWordVisible = true;
+                            let makeWordInvisible = false;
+
                             if (state.focusView === 'word-only') {
                                 if (isActiveLine) {
                                     if (state.activeWordIndex === -1) {
-                                        // Show first word as a starting helper
                                         isWordVisible = (wordIdx === 0);
                                     } else {
                                         isWordVisible = (wordIdx === state.activeWordIndex);
+                                    }
+                                } else {
+                                    isWordVisible = false;
+                                }
+                            } else if (state.focusView === 'active-word-only') {
+                                if (isActiveLine) {
+                                    const activeIdx = state.activeWordIndex === -1 ? 0 : state.activeWordIndex;
+                                    if (wordIdx !== activeIdx) {
+                                        makeWordInvisible = true;
                                     }
                                 } else {
                                     isWordVisible = false;
@@ -2930,12 +3026,18 @@
                             const span = document.createElement('span');
                             span.className = 'japa-word rounded px-1';
                             span.textContent = word;
+                            if (makeWordInvisible) {
+                                span.style.visibility = 'hidden';
+                            }
 
                             let fsSpan;
                             if (fsDisplayBox) {
                                 fsSpan = document.createElement('span');
                                 fsSpan.className = 'japa-word rounded px-2';
                                 fsSpan.textContent = word;
+                                if (makeWordInvisible) {
+                                    fsSpan.style.visibility = 'hidden';
+                                }
                             }
 
                             let isHighlighted = false;
