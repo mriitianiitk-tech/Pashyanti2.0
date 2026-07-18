@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mantra & Stotra Japa Sanctuary</title>
+    <title>Pashyanti Japa App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Meditative Aesthetics -->
@@ -356,7 +356,7 @@
             <div class="flex items-center gap-3">
                 <span class="text-2xl text-amber-500 animate-pulse">ॐ</span>
                 <div>
-                    <h1 class="text-lg font-bold font-serif tracking-wider text-amber-500">Mantra & Stotra Sanctuary</h1>
+                    <h1 class="text-lg font-bold font-serif tracking-wider text-amber-500">Pashyanti Japa App</h1>
                     <p class="text-xs text-gray-400">Sacred Space for Mindful Chanting & Recitation</p>
                 </div>
             </div>
@@ -369,7 +369,10 @@
                     Treasury
                 </button>
                 <button id="tab-data" onclick="switchTab('data')" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white">
-                    Backup & Info
+                    Preferences & Data
+                </button>
+                <button id="tab-help" onclick="switchTab('help')" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white">
+                    Help
                 </button>
             </nav>
         </div>
@@ -417,7 +420,7 @@
             </div>
 
             <!-- Direct Focus & Navigation Selector Control Strip -->
-            <div class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40">
+            <div id="focus-navigation-bar" class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40">
                 
                 <!-- Toggle Mode Selector: Option to hide completed/upcoming lines -->
                 <div class="flex flex-wrap items-center gap-2">
@@ -499,7 +502,7 @@
             </div>
 
             <!-- Auto Play Control Panel -->
-            <div class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40 z-20 relative">
+            <div id="auto-play-bar" class="flex flex-wrap items-center justify-between gap-3 bg-gray-950/20 p-3 rounded-xl border border-gray-800/40 z-20 relative">
                 <div class="flex items-center gap-2">
                     <button id="btn-auto-play" onclick="toggleAutoPlay()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow-md shadow-emerald-900/10">
                         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -596,8 +599,93 @@
             </div>
         </section>
 
-        <!-- TAB 3: BACKUP, RESTORE & DATA TRANSFER -->
+        <!-- TAB 3: PREFERENCES & DATA -->
         <section id="section-data" class="hidden space-y-6">
+            <!-- Workspace Preferences Card -->
+            <div class="max-w-2xl mx-auto bg-gray-900/40 p-6 rounded-xl border border-gray-800/80 backdrop-blur-sm space-y-6">
+                <div>
+                    <h3 class="text-md font-bold text-amber-500 tracking-wider mb-2">✦ Workspace Preferences</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Select which tools and visual settings you want active in your Sadhana workspace. Unused features are hidden automatically to keep your workspace simple and clean.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-800/40 pt-4">
+                    <!-- Toggle 1: Auto-Play Engine -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Auto-Play Engine</span>
+                            <span class="text-[10px] text-gray-400 block">Auto chanting controls and speed sliders.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-autoplay" onchange="toggleFeature('autoPlay', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+
+                    <!-- Toggle 2: Focus & Navigation Controls -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Focus & Navigation</span>
+                            <span class="text-[10px] text-gray-400 block">Focus modes selection strip and stanza jump controls.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-focusmodes" onchange="toggleFeature('focusModes', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+
+                    <!-- Toggle 3: Deity Background Images -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Deity Visual Media</span>
+                            <span class="text-[10px] text-gray-400 block">Deity background images, layouts, opacity, and zoom sliders.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-deitymedia" onchange="toggleFeature('deityMedia', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+
+                    <!-- Toggle 4: Interactive Word Painting -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Word Color Painter</span>
+                            <span class="text-[10px] text-gray-400 block">Color-brush painting of individual words in your mantras.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-wordpainting" onchange="toggleFeature('wordPainting', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+
+                    <!-- Toggle 5: Colors, Fonts & Highlights -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Colors, Fonts & Highlights</span>
+                            <span class="text-[10px] text-gray-400 block">Custom RGB color pickers, font typefaces, sizes, and highlight modes.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-advancedaesthetics" onchange="toggleFeature('advancedAesthetics', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+
+                    <!-- Toggle 6: Sadhana Feedback Systems -->
+                    <div class="p-4 bg-gray-950/40 rounded-lg border border-gray-800 flex items-center justify-between gap-4">
+                        <div class="space-y-0.5">
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-amber-500/95">Sound & Haptics</span>
+                            <span class="text-[10px] text-gray-400 block">Tibetan bowl sound chime, mobile vibration feedback, and flying Om.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="feature-feedbacksystems" onchange="toggleFeature('feedbackSystems', this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600 peer-checked:after:bg-white"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup & Portability Section -->
             <div class="max-w-2xl mx-auto bg-gray-900/40 p-6 rounded-xl border border-gray-800/80 backdrop-blur-sm space-y-6">
                 <div>
                     <h3 class="text-md font-bold text-amber-500 tracking-wider mb-2">Secure Standalone Portability</h3>
@@ -642,6 +730,106 @@
                     <p class="text-xs italic text-gray-400 leading-relaxed">
                         "Real Sadhana is that which destroys cycle of births and deaths and leads us to state of eternal bliss." Chanting mantras is configured here to assist spiritual development towards obtaining moksha. Focus, clarity, and precision in sound resonance are key metrics of progress.
                     </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: GUIDE & HELP -->
+        <section id="section-help" class="hidden space-y-6">
+            <div class="max-w-3xl mx-auto bg-gray-900/40 p-6 md:p-8 rounded-xl border border-gray-800/80 backdrop-blur-sm space-y-6">
+                <div class="border-b border-gray-850 pb-4 text-center">
+                    <h3 class="text-xl font-bold font-serif text-amber-500 tracking-wider flex items-center justify-center gap-2">
+                        <span>🔱</span> Pashyanti Japa Guide
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">Understanding the features of your sacred chanting sanctuary</p>
+                </div>
+
+                <div class="space-y-6 text-sm text-gray-300 leading-relaxed font-sans">
+                    <!-- Feature 1 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 1. Sadhana (Chanting Space)
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            The primary space for recitation. Select a Mantra or Stotra from the dropdown. Tap on the screen, press the <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold text-[10px]">Space</kbd> bar, or use the <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold text-[10px]">Right Arrow</kbd> to step forward. Use the <kbd class="px-1.5 py-0.5 rounded bg-black/50 border border-white/10 text-amber-500 font-bold text-[10px]">Left Arrow</kbd> to go backward. The active word/phrase zooms and glows dynamically as you progress.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 2. Auto-Play Engine
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Enables hands-free chanting. Once enabled in <strong>Preferences</strong>, you can click <span class="text-emerald-400 font-semibold">Auto Chant</span>. Use the speed slider to adjust the delay between chants/phrases (from 0.1s to 5.0s). Perfect for syncing visual rhythm with your internal breath.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 3. Focus & Navigation
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Unlocks advanced layout controls. Switch focus modes to hide completed lines, display only the active line, or focus purely on a single word at a time. For long stotras, a <strong>Stanza Jump Selector</strong> appears, allowing you to skip directly to any verse.
+                        </p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 4. Deity Visual Media
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Upload local images or paste web URLs to overlay backgrounds of deities. Choose layouts like split-screen panels (image on left/right), center-panel overlays, top-image stacks, or full backdrop overlays. Custom opacity, crop scale, and vertical offset sliders give you complete aesthetic control.
+                        </p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 5. Custom Word Painter
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Unlocks a painting brush. Select a color swatch in the Aesthetics panel, then click on words in the text preview box to color-code specific words. Ideal for highlighting seed syllables (Beeja mantras), breath cues, or focus points.
+                        </p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 6. Colors, Fonts & Highlight Modes
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Enables granular control over fonts (8 beautiful Devanagari & classical Roman typefaces), font sizes, text styles (bold, italic, normal), custom background/dim text color pickers, and highlight modes (phrase-by-phrase, line-by-line, or the dripping tap falling animation).
+                        </p>
+                    </div>
+
+                    <!-- Feature 7 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 7. Sound & Haptic Feedback
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            When completing a full mantra round or stotra, the app plays a resonant <strong>Tibetan Singing Bowl chime</strong> (synthesized via Web Audio API) and triggers complex tactile vibrations on mobile screens, alongside flying <strong>ॐ</strong> animations and Toast notifications.
+                        </p>
+                    </div>
+
+                    <!-- Feature 8 -->
+                    <div class="bg-gray-950/30 border border-gray-800/40 p-4 rounded-lg">
+                        <h4 class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1.5 flex items-center gap-1.5 font-serif">
+                            <span>✦</span> 8. Treasury (Composition Manager)
+                        </h4>
+                        <p class="pl-4 text-xs text-gray-300">
+                            Add, edit, or delete custom mantras and stotras. Separate verses using single line breaks, and separate stanzas using double line breaks to build paragraphs. Reset metrics for individual compositions at any time.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Guidance note -->
+                <div class="bg-amber-950/10 border border-amber-900/20 p-5 rounded-lg text-xs italic text-gray-400 mt-4 leading-relaxed font-serif text-center">
+                    <div class="text-amber-500 font-semibold uppercase tracking-widest mb-1">Workspace Philosophy</div>
+                    "Pashyanti" is the second level of sound in Vedic philosophy — sound as it begins to take visual form in the mind. By combining clean aesthetics, customizable features, and precise tracking, this app is designed to bring focus to your sadhana, leading to deeper meditation.
                 </div>
             </div>
         </section>
@@ -692,7 +880,7 @@
             </div>
 
             <!-- Detailed Color Pickers -->
-            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-advanced-colors" class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div class="flex justify-between items-center text-xs">
                     <span class="text-gray-400 font-semibold">Custom Background</span>
                     <input type="color" id="picker-bg" onchange="updateCustomColors()" class="w-8 h-8 rounded border-none bg-transparent cursor-pointer">
@@ -747,7 +935,7 @@
             </div>
 
             <!-- Interactive Highlight Modes -->
-            <div class="space-y-2 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-highlight-modes" class="space-y-2 border-t border-gray-800/80 pt-4">
                 <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Highlight Interval & Mode</label>
                 <div class="grid grid-cols-3 gap-1.5">
                     <button id="btn-mode-phrase" onclick="setHighlightMode('phrase')" class="py-2 text-[10px] md:text-xs rounded border border-amber-600 bg-amber-650/10 text-amber-500 font-semibold transition">
@@ -802,7 +990,7 @@
             </div>
 
             <!-- Individual Word Colors Assignor -->
-            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-word-painting-container" class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div class="flex justify-between items-center">
                     <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Word Color Painter</label>
                     <button onclick="clearWordColorMap()" class="text-[10px] text-rose-400 hover:text-rose-300 transition font-medium">Clear All Word Colors</button>
@@ -828,7 +1016,7 @@
             </div>
 
             <!-- Font Adjustments -->
-            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-advanced-fonts" class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1.5">Font Typeface</label>
                     <select id="font-family-selector" onchange="setFontFamily(this.value)" class="w-full bg-gray-950 border border-gray-800 text-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none">
@@ -862,7 +1050,7 @@
             </div>
 
             <!-- Deity Background Image Section -->
-            <div class="space-y-4 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-deity-media-container" class="space-y-4 border-t border-gray-800/80 pt-4">
                 <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Deity Background Image</label>
                 <p class="text-[10px] text-gray-500 leading-normal">
                     Set a background image specifically for this mantra/stotra.
@@ -930,7 +1118,7 @@
             </div>
 
             <!-- Feedback Adjustments -->
-            <div class="space-y-3 border-t border-gray-800/80 pt-4">
+            <div id="aesthetics-feedback-container" class="space-y-3 border-t border-gray-800/80 pt-4">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="block text-xs uppercase tracking-wider text-gray-400 font-semibold">Tibetan Singing Bowl Sound</span>
@@ -1119,7 +1307,15 @@
             },
             editingMantraId: null,
             autoPlayIntervalId: null,
-            autoPlaySpeed: 2000
+            autoPlaySpeed: 2000,
+            features: {
+                autoPlay: false,
+                focusModes: false,
+                deityMedia: true,
+                wordPainting: false,
+                advancedAesthetics: false,
+                feedbackSystems: true
+            }
         };
 
         // Initialize state on start
@@ -1131,6 +1327,7 @@
                 state.activeWordIndex = 0;
             }
             setFocusView(state.focusView || "all");
+            syncFeatureVisibility();
             renderAll();
             
             // Register Keyboard Listeners
@@ -1144,6 +1341,14 @@
                     if (overlay) overlay.classList.add('hidden');
                 }
             });
+
+            // Onboarding hint for first-time visitors
+            if (!localStorage.getItem('__japa_sanctuary_first_load')) {
+                setTimeout(() => {
+                    showToast("Welcome to Pashyanti Japa App! Customize your workspace in the 'Preferences & Data' tab.", false);
+                    localStorage.setItem('__japa_sanctuary_first_load', 'completed');
+                }, 1500);
+            }
         });
 
         // ---------------------------------------------------------------------
@@ -1276,6 +1481,16 @@
                             state.customColors.wordColors = ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"];
                         }
                         
+                        // Load saved workspace features if present, otherwise default to all true to preserve setup for existing users
+                        state.features = parsed.features || {
+                            autoPlay: true,
+                            focusModes: true,
+                            deityMedia: true,
+                            wordPainting: true,
+                            advancedAesthetics: true,
+                            feedbackSystems: true
+                        };
+                        
                         if (state.mantras.length > 0) {
                             state.selectedMantraId = state.mantras[0].id;
                         }
@@ -1356,6 +1571,14 @@
                     active: "#60a5fa",
                     wordColors: ["#60a5fa", "#34d399", "#fb7185", "#fbbf24", "#a78bfa"]
                 };
+                state.features = {
+                    autoPlay: false,
+                    focusModes: false,
+                    deityMedia: true,
+                    wordPainting: false,
+                    advancedAesthetics: false,
+                    feedbackSystems: true
+                };
                 
                 // Clear body light-mode class
                 document.body.classList.remove('light-mode');
@@ -1364,6 +1587,7 @@
                 applyThemeConfigStyles();
                 populateMantraSelector();
                 setFocusView("all");
+                syncFeatureVisibility();
                 renderAll();
                 showToast("Cleared to default seeds.");
             }
@@ -1811,7 +2035,7 @@
             if (!m) return;
 
             const layout = m.bgLayout || 'background';
-            const hasImage = !!m.bgImage;
+            const hasImage = !!m.bgImage && state.features.deityMedia;
 
             // Reset background overlays
             if (japaBg) { japaBg.style.backgroundImage = 'none'; japaBg.style.opacity = 0; }
@@ -2213,6 +2437,7 @@
             state.activeParagraphIndex = 0;
             state.activeLineIndex = 0;
             state.activeWordIndex = (state.highlightMode === 'drip') ? 0 : -1;
+            state.isDripBreak = false;
             
             // Sync quick-jump selectors on resetting round
             const jumper = document.getElementById('stotra-stanza-jumper');
@@ -2225,6 +2450,20 @@
             const item = getSelectedMantra();
             const parsed = parseSacredText(item.text);
             
+            // If in blank break state, render completely empty space for static, and return null for falling
+            if (state.isDripBreak) {
+                if (isStatic) {
+                    const dripEl = document.createElement('div');
+                    dripEl.className = 'dripping-word-static font-serif';
+                    dripEl.style.fontSize = state.fontSize + 'px';
+                    dripEl.style.fontFamily = 'var(--japa-font)';
+                    dripEl.innerHTML = '&nbsp;';
+                    return dripEl;
+                } else {
+                    return null;
+                }
+            }
+
             const dripEl = document.createElement('div');
             dripEl.className = (isStatic ? 'dripping-word-static' : 'dripping-word-falling') + ' font-serif';
             
@@ -2316,6 +2555,13 @@
             triggerVibration(15);
 
             if (state.highlightMode === 'drip') {
+                // If we are currently in a break state, exit the break and render the next word
+                if (state.isDripBreak) {
+                    state.isDripBreak = false;
+                    renderJapaScreen();
+                    return;
+                }
+
                 // Remove only the static element, let existing falling elements keep falling
                 const panels = [];
                 if (state.isFullscreen) {
@@ -2343,18 +2589,19 @@
                 panels.forEach(panel => {
                     if (!panel) return;
                     const dripEl = createDripElement(false); // isStatic = false (falling)
-                    panel.appendChild(dripEl);
-                    
-                    // Remove this specific falling element when its fall duration finishes
-                    setTimeout(() => {
-                        dripEl.remove();
-                    }, duration);
+                    if (dripEl) {
+                        panel.appendChild(dripEl);
+                        setTimeout(() => {
+                            dripEl.remove();
+                        }, duration);
+                    }
                 });
 
                 // 2. Advance the indices to the NEXT word/phrase
                 const currentParagraph = parsed[state.activeParagraphIndex];
                 const currentLine = currentParagraph ? currentParagraph[state.activeLineIndex] : null;
                 
+                let completedLineBoundary = false;
                 let completedRound = false;
 
                 if (state.dripUnit === 'word') {
@@ -2365,6 +2612,7 @@
                     if (currentLine && state.activeWordIndex < currentLine.length - 1) {
                         state.activeWordIndex++;
                     } else {
+                        completedLineBoundary = true;
                         if (currentParagraph && state.activeLineIndex < currentParagraph.length - 1) {
                             state.activeLineIndex++;
                             state.activeWordIndex = 0;
@@ -2382,6 +2630,7 @@
                         }
                     }
                 } else { // dripUnit === 'phrase'
+                    completedLineBoundary = true;
                     if (currentParagraph && state.activeLineIndex < currentParagraph.length - 1) {
                         state.activeLineIndex++;
                     } else {
@@ -2405,6 +2654,9 @@
                     state.activeWordIndex = 0;
                     const jumper = document.getElementById('stotra-stanza-jumper');
                     if (jumper) jumper.value = 0;
+                    state.isDripBreak = true; // Trigger break at end of round
+                } else if (completedLineBoundary) {
+                    state.isDripBreak = true; // Trigger break at end of line
                 }
 
                 // Sync counter labels, progress bars, and IMMEDIATELY render next static top word
@@ -2481,12 +2733,24 @@
                     state.dripTimeoutId = null;
                 }
 
-                if (state.dripUnit === 'word') {
-                    if (state.activeWordIndex > 0) {
-                        state.activeWordIndex--;
-                    } else if (state.activeWordIndex === 0) {
-                        state.activeWordIndex = -1;
-                    } else {
+                // Remove existing static element
+                const panels = [];
+                if (state.isFullscreen) {
+                    panels.push(document.getElementById('fs-content-panel'));
+                } else {
+                    panels.push(document.getElementById('japa-content-panel'));
+                }
+                panels.forEach(panel => {
+                    if (!panel) return;
+                    const oldElements = panel.querySelectorAll('.dripping-word-static');
+                    oldElements.forEach(el => el.remove());
+                });
+
+                if (state.isDripBreak) {
+                    // Exit break state and move to the end of the previous line/stanza
+                    state.isDripBreak = false;
+                    
+                    if (state.dripUnit === 'word') {
                         if (state.activeLineIndex > 0) {
                             state.activeLineIndex--;
                             state.activeWordIndex = currentParagraph[state.activeLineIndex].length - 1;
@@ -2499,28 +2763,65 @@
                                 
                                 const jumper = document.getElementById('stotra-stanza-jumper');
                                 if (jumper) jumper.value = state.activeParagraphIndex;
+                            } else {
+                                // Wrap around
+                                const lastParaIndex = parsed.length - 1;
+                                const lastPara = parsed[lastParaIndex];
+                                state.activeParagraphIndex = lastParaIndex;
+                                state.activeLineIndex = lastPara.length - 1;
+                                state.activeWordIndex = lastPara[state.activeLineIndex].length - 1;
+                                
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
+                            }
+                        }
+                    } else { // dripUnit === 'phrase'
+                        if (state.activeLineIndex > 0) {
+                            state.activeLineIndex--;
+                        } else {
+                            if (state.activeParagraphIndex > 0) {
+                                state.activeParagraphIndex--;
+                                const prevParagraph = parsed[state.activeParagraphIndex];
+                                state.activeLineIndex = prevParagraph.length - 1;
+                                
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
+                            } else {
+                                // Wrap around
+                                const lastParaIndex = parsed.length - 1;
+                                const lastPara = parsed[lastParaIndex];
+                                state.activeParagraphIndex = lastParaIndex;
+                                state.activeLineIndex = lastPara.length - 1;
+                                
+                                const jumper = document.getElementById('stotra-stanza-jumper');
+                                if (jumper) jumper.value = state.activeParagraphIndex;
                             }
                         }
                     }
-                } else {
-                    if (state.activeLineIndex > 0) {
-                        state.activeLineIndex--;
-                    } else {
-                        if (state.activeParagraphIndex > 0) {
-                            state.activeParagraphIndex--;
-                            const prevParagraph = parsed[state.activeParagraphIndex];
-                            state.activeLineIndex = prevParagraph.length - 1;
-                            
-                            const jumper = document.getElementById('stotra-stanza-jumper');
-                            if (jumper) jumper.value = state.activeParagraphIndex;
-                        } else {
-                            state.activeWordIndex = -1;
-                        }
-                    }
+                    renderJapaScreen();
+                    return;
                 }
-                
-                if (state.activeWordIndex === -1) {
-                    state.activeWordIndex = 0;
+
+                // If not currently in break state, going backward from boundary triggers break
+                let enterBreak = false;
+                if (state.dripUnit === 'word') {
+                    if (state.activeWordIndex <= 0) {
+                        enterBreak = true;
+                    }
+                } else { // phrase
+                    enterBreak = true;
+                }
+
+                if (enterBreak) {
+                    state.isDripBreak = true;
+                    renderJapaScreen();
+                    return;
+                }
+
+                if (state.dripUnit === 'word') {
+                    if (state.activeWordIndex > 0) {
+                        state.activeWordIndex--;
+                    }
                 }
                 
                 renderJapaScreen();
@@ -2729,15 +3030,19 @@
             pauseAutoPlay();
             state.currentTab = tabId;
             
-            const tabs = ['japa', 'library', 'data'];
+            const tabs = ['japa', 'library', 'data', 'help'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
-                if (t === tabId) {
-                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 bg-amber-600 text-white shadow-lg";
-                    document.getElementById(`section-${t}`).classList.remove('hidden');
-                } else {
-                    btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white";
-                    document.getElementById(`section-${t}`).classList.add('hidden');
+                if (btn) {
+                    if (t === tabId) {
+                        btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 bg-amber-600 text-white shadow-lg";
+                        const sec = document.getElementById(`section-${t}`);
+                        if (sec) sec.classList.remove('hidden');
+                    } else {
+                        btn.className = "px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white";
+                        const sec = document.getElementById(`section-${t}`);
+                        if (sec) sec.classList.add('hidden');
+                    }
                 }
             });
 
@@ -3432,6 +3737,101 @@
                 toast.classList.add('translate-y-20', 'opacity-0');
                 toast.classList.remove('translate-y-0', 'opacity-100');
             }, 2500);
+        }
+
+        function toggleFeature(featureName, isEnabled) {
+            if (!state.features) state.features = {};
+            state.features[featureName] = isEnabled;
+            saveDatabaseToTransientCache();
+            syncFeatureVisibility();
+            renderAll();
+        }
+
+        function syncFeatureTogglesUI() {
+            if (!state.features) return;
+            const features = ['autoPlay', 'focusModes', 'deityMedia', 'wordPainting', 'advancedAesthetics', 'feedbackSystems'];
+            features.forEach(f => {
+                const el = document.getElementById(`feature-${f.toLowerCase()}`);
+                if (el) {
+                    el.checked = !!state.features[f];
+                }
+            });
+        }
+
+        function syncFeatureVisibility() {
+            if (!state.features) return;
+            
+            syncFeatureTogglesUI();
+
+            // 1. Auto Chant Bar
+            const autoPlayBar = document.getElementById('auto-play-bar');
+            if (autoPlayBar) {
+                if (state.features.autoPlay) {
+                    autoPlayBar.classList.remove('hidden');
+                } else {
+                    autoPlayBar.classList.add('hidden');
+                    pauseAutoPlay();
+                }
+            }
+
+            // 2. Focus & Navigation Strip
+            const focusNavBar = document.getElementById('focus-navigation-bar');
+            if (focusNavBar) {
+                if (state.features.focusModes) {
+                    focusNavBar.classList.remove('hidden');
+                } else {
+                    focusNavBar.classList.add('hidden');
+                    if (state.focusView !== 'all') {
+                        setFocusView('all');
+                    }
+                }
+            }
+
+            // 3. Deity Visual Media in Aesthetics
+            const deityContainer = document.getElementById('aesthetics-deity-media-container');
+            if (deityContainer) {
+                if (state.features.deityMedia) {
+                    deityContainer.classList.remove('hidden');
+                } else {
+                    deityContainer.classList.add('hidden');
+                }
+            }
+
+            // 4. Word Color Painter in Aesthetics
+            const wordPaintingContainer = document.getElementById('aesthetics-word-painting-container');
+            if (wordPaintingContainer) {
+                if (state.features.wordPainting) {
+                    wordPaintingContainer.classList.remove('hidden');
+                } else {
+                    wordPaintingContainer.classList.add('hidden');
+                }
+            }
+
+            // 5. Advanced Colors, Fonts & Highlights in Aesthetics
+            const advancedColors = document.getElementById('aesthetics-advanced-colors');
+            const highlightModes = document.getElementById('aesthetics-highlight-modes');
+            const advancedFonts = document.getElementById('aesthetics-advanced-fonts');
+            const showAdvanced = !!state.features.advancedAesthetics;
+            
+            [advancedColors, highlightModes, advancedFonts].forEach(el => {
+                if (el) {
+                    if (showAdvanced) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+            });
+
+            // 6. Feedback Systems in Aesthetics
+            const feedbackContainer = document.getElementById('aesthetics-feedback-container');
+            if (feedbackContainer) {
+                if (state.features.feedbackSystems) {
+                    feedbackContainer.classList.remove('hidden');
+                } else {
+                    feedbackContainer.classList.add('hidden');
+                }
+            }
         }
     </script>
 </body>
